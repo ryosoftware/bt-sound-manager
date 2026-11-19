@@ -39,6 +39,12 @@ class EventsViewModelTest {
             return event.id
         }
 
+        override suspend fun getAllEvents(): List<BluetoothEvent> = state.value
+
+        override suspend fun replaceAllEvents(events: List<BluetoothEvent>) {
+            state.value = events
+        }
+
         override suspend fun pruneExpired() = Unit
 
         override suspend fun deleteEvents(ids: Set<Long>) {

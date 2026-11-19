@@ -19,4 +19,6 @@ interface SettingsRepository {
     suspend fun updateAppearance(transform: (AppearanceSettings) -> AppearanceSettings)
 
     suspend fun updateEvents(transform: (EventsSettings) -> EventsSettings)
+
+    suspend fun replaceAll(settings: AppSettings)
 }

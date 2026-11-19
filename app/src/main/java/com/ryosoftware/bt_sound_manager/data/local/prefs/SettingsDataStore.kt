@@ -83,6 +83,42 @@ class SettingsDataStore @Inject constructor(
         }
     }
 
+    override suspend fun replaceAll(settings: AppSettings) {
+        val automation = settings.automation
+        val background = settings.background
+        val appearance = settings.appearance
+        val events = settings.events
+        val modesConflict = automation.modeWhenConnected == automation.modeWhenNone
+        val connectedMode = if (modesConflict) {
+            InterruptMode.DO_NOT_DISTURB
+        } else {
+            automation.modeWhenConnected
+        }
+        val noneMode = if (modesConflict) InterruptMode.NORMAL else automation.modeWhenNone
+        dataStore.edit { preferences ->
+            preferences[Keys.AUTOMATION_ENABLED] = automation.enabled
+            preferences[Keys.AUTOMATION_ALL_DAY] = automation.allDay
+            preferences[Keys.AUTOMATION_START_MINUTE] = automation.startMinuteOfDay.coerceIn(0, 24 * 60 - 1)
+            preferences[Keys.AUTOMATION_END_MINUTE] = automation.endMinuteOfDay.coerceIn(0, 24 * 60 - 1)
+            preferences[Keys.AUTOMATION_MONITOR_ALL] = automation.monitorAllDevices
+            preferences[Keys.AUTOMATION_SELECTED_DEVICES] =
+                automation.selectedDeviceAddresses.mapNotNull(::normalizeAddress).toSet()
+            preferences[Keys.AUTOMATION_MODE_CONNECTED] = connectedMode.storageValue
+            preferences[Keys.AUTOMATION_MODE_NONE] = noneMode.storageValue
+            preferences[Keys.AUTOMATION_FORCE_MODE] = automation.forceMode
+            preferences[Keys.AUTOMATION_RESTORE_VOLUME] = automation.restoreMediaVolume
+            preferences[Keys.BACKGROUND_DETECT_BLUETOOTH] = background.detectBluetoothEvents ||
+                background.reactivateOnUserChange
+            preferences[Keys.BACKGROUND_USER_CHANGE] = background.reactivateOnUserChange
+            preferences[Keys.THEME_MODE] = appearance.themeMode.storageValue
+            preferences[Keys.DYNAMIC_COLOR] = appearance.dynamicColor
+            preferences[Keys.EVENTS_RETENTION_DAYS] = events.retentionDays.coerceIn(
+                EventsSettings.MIN_RETENTION_DAYS,
+                EventsSettings.MAX_RETENTION_DAYS,
+            )
+        }
+    }
+
     private object Keys {
         val AUTOMATION_ENABLED = booleanPreferencesKey("automation.enabled")
         val AUTOMATION_ALL_DAY = booleanPreferencesKey("automation.all_day")

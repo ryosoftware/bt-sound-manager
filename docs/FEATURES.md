@@ -116,7 +116,19 @@ Reglas:
 - en Acerca de: enlace al repositorio de GitHub y acceso a la información de la app;
 - versión de la app.
 
-## 9. Selección de dispositivos
+## 9. Copia de seguridad y restauración
+
+- El menú de tres puntos de Ajustes permite **Copiar datos** y **Restaurar datos** mediante el selector de documentos del sistema, sin permisos de almacenamiento.
+- La copia se guarda en un JSON legible con versión de formato, versión de la app, fecha, eventos y ajustes.
+- No se copian los nombres de dispositivos (caché derivada), el estado interno de automatización ni los IDs de Room.
+- Al restaurar se muestran dos opciones siempre disponibles: **Eventos** y **Ajustes**.
+- Restaurar eventos borra la tabla actual y restaura los del archivo, aunque el archivo no contenga eventos.
+- Restaurar ajustes sobrescribe todos los ajustes actuales.
+- Después de restaurar se aplica la retención resultante y se eliminan los eventos que queden fuera del rango.
+- Si se restauran ajustes, se sincroniza el servicio en segundo plano y se reevalúa la automatización.
+- Después de restaurar ajustes se recrea la Activity y se reconstruye la UI de Compose para aplicar el tema y el resto de estado visual desde cero.
+
+## 10. Selección de dispositivos
 
 - lista dispositivos emparejados, conectados y con nombre guardado;
 - búsqueda por nombre o dirección;
@@ -124,7 +136,7 @@ Reglas:
 - selección múltiple;
 - guardado automático para la automatización al salir con la flecha de la barra superior o con el gesto/botón atrás.
 
-## 10. Tema y accesibilidad
+## 11. Tema y accesibilidad
 
 - Material 3.
 - Tema claro, oscuro y automático.
@@ -135,7 +147,7 @@ Reglas:
 - Soporte de fuente dinámica y RTL.
 - Navegación inferior en móvil con dos destinos (Eventos y Ajustes) y contenido adaptado a pantallas grandes.
 
-## 11. Privacidad
+## 12. Privacidad
 
 - La app no declara el permiso `INTERNET`.
 - No realiza peticiones de red.

@@ -1,6 +1,8 @@
 package com.ryosoftware.bt_sound_manager.data.repository
 
+import androidx.room.withTransaction
 import com.ryosoftware.bt_sound_manager.core.time.AppClock
+import com.ryosoftware.bt_sound_manager.data.local.db.AppDatabase
 import com.ryosoftware.bt_sound_manager.data.local.db.BluetoothEventDao
 import com.ryosoftware.bt_sound_manager.data.local.db.BluetoothEventEntity
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEvent
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.map
 @Singleton
 class BluetoothEventRepositoryImpl @Inject constructor(
     private val dao: BluetoothEventDao,
+    private val database: AppDatabase,
     private val clock: AppClock,
     private val settingsRepository: SettingsRepository,
 ) : BluetoothEventRepository {
@@ -28,6 +31,18 @@ class BluetoothEventRepositoryImpl @Inject constructor(
     override suspend fun addEvent(event: BluetoothEvent): Long {
         pruneExpired()
         return dao.insert(event.toEntity())
+    }
+
+    override suspend fun getAllEvents(): List<BluetoothEvent> =
+        dao.getAll().mapNotNull { it.toDomain() }
+
+    override suspend fun replaceAllEvents(events: List<BluetoothEvent>) {
+        database.withTransaction {
+            dao.deleteAll()
+            if (events.isNotEmpty()) {
+                dao.insertAll(events.map { it.toEntity() })
+            }
+        }
     }
 
     override suspend fun pruneExpired() {

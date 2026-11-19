@@ -34,11 +34,16 @@ Cubren:
 - despacho del worker de automatización a las operaciones del coordinador;
 - filtrado y borrado en `EventsViewModel`;
 - reevaluación de la automatización al iniciar la app en `MainViewModel`;
+- codificación y decodificación del JSON de copia de seguridad;
+- restauración selectiva de eventos y ajustes;
+- aplicación de la retención después de restaurar;
+- limpieza de la tabla al restaurar una copia sin eventos;
+- recreación de la Activity al restaurar ajustes y no al restaurar solo eventos;
 - mapeo de preferencias y valores por defecto.
 
 ### Resultado actual
 
-- **50 pruebas unitarias** ejecutadas.
+- **69 pruebas unitarias** ejecutadas.
 - **0 fallos**.
 - **0 omitidas**.
 
@@ -101,7 +106,10 @@ No se puede certificar en emulador:
 - cambio de usuario real;
 - diferencias de fabricantes (MIUI, Samsung, etc.);
 - alarmas exactas con el dispositivo en reposo;
-- consumo de batería real.
+- consumo de batería real;
+- creación y restauración de copias de seguridad mediante el selector de documentos;
+- aplicación de la retención tras restaurar una copia con eventos antiguos;
+- recreación visible de la Activity y de la UI después de restaurar ajustes.
 
 Estas comprobaciones deben realizarse en un dispositivo físico antes de considerar la app lista para producción.
 
@@ -115,4 +123,5 @@ Estas comprobaciones deben realizarse en un dispositivo físico antes de conside
 - La navegación y el back stack funcionan.
 - Los temas claro, oscuro y dinámico se aplican correctamente.
 - La automatización respeta horario, dispositivos y permisos.
+- La copia de seguridad se crea y se restaura por secciones, aplicando la retención.
 - Las notificaciones y sus acciones funcionan según lo esperado.

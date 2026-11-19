@@ -22,6 +22,12 @@ fun formatEventTime(context: Context, utcMillis: Long): String {
     return SimpleDateFormat(pattern, Locale.getDefault()).format(Date(utcMillis))
 }
 
+fun formatDateTime(context: Context, utcMillis: Long): String {
+    val skeleton = if (DateFormat.is24HourFormat(context)) "yMMMdHm" else "yMMMdhm"
+    val pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton)
+    return SimpleDateFormat(pattern, Locale.getDefault()).format(Date(utcMillis))
+}
+
 fun formatEventDate(context: Context, date: LocalDate): String =
     runCatching {
         date.format(

@@ -10,25 +10,35 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Alarm
+import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.BatteryAlert
 import androidx.compose.material.icons.outlined.Bluetooth
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,14 +46,18 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -57,6 +71,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ryosoftware.bt_sound_manager.BuildConfig
 import com.ryosoftware.bt_sound_manager.R
 import com.ryosoftware.bt_sound_manager.core.util.displayDeviceName
+import com.ryosoftware.bt_sound_manager.domain.model.BackupSelection
+import com.ryosoftware.bt_sound_manager.domain.model.BackupSummary
 import com.ryosoftware.bt_sound_manager.domain.model.EventsSettings
 import com.ryosoftware.bt_sound_manager.domain.model.ThemeMode
 import com.ryosoftware.bt_sound_manager.presentation.components.BluetoothStatusCard
@@ -65,6 +81,7 @@ import com.ryosoftware.bt_sound_manager.presentation.components.MonitorizeTopApp
 import com.ryosoftware.bt_sound_manager.presentation.components.SectionCard
 import com.ryosoftware.bt_sound_manager.presentation.components.SettingNavigationRow
 import com.ryosoftware.bt_sound_manager.presentation.components.SettingSwitchRow
+import com.ryosoftware.bt_sound_manager.presentation.components.formatDateTime
 import androidx.core.net.toUri
 import kotlin.math.roundToInt
 
@@ -101,10 +118,49 @@ fun SettingsScreen(
     ) {
         viewModel.refreshSystemState()
     }
+    val createBackupLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri ->
+        uri?.let { viewModel.createBackup(it.toString()) }
+    }
+    val restoreBackupLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        uri?.let { viewModel.inspectBackup(it.toString()) }
+    }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val backupEvents = viewModel.events
+    LaunchedEffect(backupEvents) {
+        backupEvents.collect { event ->
+            val message = when (event) {
+                SettingsEvent.BackupSaved -> context.getString(R.string.backup_saved)
+                SettingsEvent.BackupFailed -> context.getString(R.string.backup_error)
+                SettingsEvent.RestoreInvalid -> context.getString(R.string.restore_invalid)
+                SettingsEvent.RestoreFailed -> context.getString(R.string.restore_error)
+                is SettingsEvent.RestoreCompleted -> when {
+                    event.settingsRestored && event.eventsRestored > 0 -> context.resources
+                        .getQuantityString(
+                            R.plurals.restore_completed_all,
+                            event.eventsRestored,
+                            event.eventsRestored,
+                        )
+
+                    event.settingsRestored -> context.getString(R.string.restore_completed_settings)
+                    else -> context.resources.getQuantityString(
+                        R.plurals.restore_completed_events,
+                        event.eventsRestored,
+                        event.eventsRestored,
+                    )
+                }
+            }
+            snackbarHostState.showSnackbar(message)
+        }
+    }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.refreshSystemState()
     }
     var showRetentionDialog by remember { mutableStateOf(false) }
+    var showBackupMenu by remember { mutableStateOf(false) }
 
     if (showRetentionDialog) {
         RetentionDaysDialog(
@@ -117,8 +173,76 @@ fun SettingsScreen(
         )
     }
 
+    state.pendingRestore?.let { summary ->
+        RestoreBackupDialog(
+            summary = summary,
+            busy = state.busy,
+            onDismiss = viewModel::cancelRestore,
+            onConfirm = viewModel::confirmRestore,
+        )
+    }
+
     Scaffold(
-        topBar = { MonitorizeTopAppBar(title = stringResource(R.string.settings_title)) },
+        topBar = {
+            MonitorizeTopAppBar(
+                title = stringResource(R.string.settings_title),
+                actions = {
+                    Box {
+                        IconButton(
+                            onClick = { showBackupMenu = true },
+                            enabled = !state.busy,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.MoreVert,
+                                contentDescription = stringResource(R.string.cd_more_options),
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showBackupMenu,
+                            onDismissRequest = { showBackupMenu = false },
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.backup_data)) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Backup,
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    showBackupMenu = false
+                                    createBackupLauncher.launch(
+                                        viewModel.suggestedBackupFileName(),
+                                    )
+                                },
+                                enabled = !state.busy,
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.restore_data)) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Restore,
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    showBackupMenu = false
+                                    restoreBackupLauncher.launch(
+                                        arrayOf(
+                                            "application/json",
+                                            "text/plain",
+                                            "application/octet-stream",
+                                        ),
+                                    )
+                                },
+                                enabled = !state.busy,
+                            )
+                        }
+                    }
+                },
+            )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         if (state.loading) {
             LoadingState(
@@ -456,6 +580,99 @@ private fun RetentionDaysDialog(
             }
         },
     )
+}
+
+@Composable
+private fun RestoreBackupDialog(
+    summary: BackupSummary,
+    busy: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (BackupSelection) -> Unit,
+) {
+    val context = LocalContext.current
+    var restoreEvents by remember(summary) { mutableStateOf(true) }
+    var restoreSettings by remember(summary) { mutableStateOf(true) }
+    AlertDialog(
+        onDismissRequest = {
+            if (!busy) onDismiss()
+        },
+        title = { Text(stringResource(R.string.restore_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = stringResource(
+                        R.string.restore_body,
+                        formatDateTime(context, summary.createdAtUtcMillis),
+                        summary.appVersion,
+                    ),
+                )
+                Text(
+                    text = stringResource(R.string.restore_warning),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                RestoreCheckbox(
+                    title = stringResource(R.string.restore_events),
+                    summary = pluralStringResource(
+                        R.plurals.events_count,
+                        summary.eventCount,
+                        summary.eventCount,
+                    ),
+                    checked = restoreEvents,
+                    onCheckedChange = { restoreEvents = it },
+                )
+                RestoreCheckbox(
+                    title = stringResource(R.string.restore_settings),
+                    summary = stringResource(R.string.restore_settings_summary),
+                    checked = restoreSettings,
+                    onCheckedChange = { restoreSettings = it },
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm(
+                        BackupSelection(
+                            events = restoreEvents,
+                            settings = restoreSettings,
+                        ),
+                    )
+                },
+                enabled = (restoreEvents || restoreSettings) && !busy,
+            ) {
+                Text(stringResource(R.string.restore_action))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, enabled = !busy) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+    )
+}
+
+@Composable
+private fun RestoreCheckbox(
+    title: String,
+    summary: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+        Column(modifier = Modifier.padding(start = 4.dp)) {
+            Text(text = title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = summary,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

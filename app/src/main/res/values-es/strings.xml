@@ -143,6 +143,34 @@
     <string name="settings_background_running">La monitorización en segundo plano está activa</string>
     <string name="settings_notifications_enabled">Las notificaciones están activadas</string>
 
+    <!-- Backup and restore -->
+    <string name="backup_data">Copia de seguridad</string>
+    <string name="restore_data">Restaurar copia</string>
+    <string name="backup_saved">Copia de seguridad guardada</string>
+    <string name="backup_error">No se ha podido crear la copia de seguridad</string>
+    <string name="restore_invalid">El archivo seleccionado no es una copia válida</string>
+    <string name="restore_error">No se ha podido restaurar la copia</string>
+    <string name="restore_title">Restaurar copia de seguridad</string>
+    <string name="restore_body">Copia del %1$s, versión %2$s de la app.</string>
+    <string name="restore_warning">Los datos seleccionados sustituirán a los actuales. Esta acción no se puede deshacer.</string>
+    <string name="restore_events">Eventos</string>
+    <string name="restore_settings">Ajustes</string>
+    <string name="restore_settings_summary">Sustituir los ajustes actuales.</string>
+    <string name="restore_action">Restaurar</string>
+    <string name="restore_completed_settings">Ajustes restaurados</string>
+
+    <plurals name="restore_completed_all">
+        <item quantity="one">Se ha restaurado %1$d evento y los ajustes</item>
+        <item quantity="many">Se han restaurado %1$d eventos y los ajustes</item>
+        <item quantity="other">Se han restaurado %1$d eventos y los ajustes</item>
+    </plurals>
+
+    <plurals name="restore_completed_events">
+        <item quantity="one">Se ha restaurado %1$d evento</item>
+        <item quantity="many">Se han restaurado %1$d eventos</item>
+        <item quantity="other">Se han restaurado %1$d eventos</item>
+    </plurals>
+
     <string name="cd_back">Atrás</string>
     <string name="cd_filter">Filtrar eventos</string>
     <string name="cd_delete">Eliminar eventos</string>
@@ -150,6 +178,7 @@
     <string name="cd_bluetooth_off">Bluetooth desactivado</string>
     <string name="cd_event_icon">Icono del evento</string>
     <string name="cd_search">Buscar</string>
+    <string name="cd_more_options">Más opciones</string>
 
     <plurals name="selected_devices_count">
         <item quantity="one">%1$d dispositivo seleccionado</item>

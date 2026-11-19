@@ -8,6 +8,10 @@ interface BluetoothEventRepository {
 
     suspend fun addEvent(event: BluetoothEvent): Long
 
+    suspend fun getAllEvents(): List<BluetoothEvent>
+
+    suspend fun replaceAllEvents(events: List<BluetoothEvent>)
+
     suspend fun pruneExpired()
 
     suspend fun deleteEvents(ids: Set<Long>)

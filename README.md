@@ -34,6 +34,15 @@ The app performs no network requests and declares no `INTERNET` or `ACCESS_NETWO
 - Hides connection/disconnection pairs separated by less than one second.
 - Refreshes paired and connected device names when the app returns to the foreground.
 
+### Backup and restore
+
+- Backs up the event history and settings to a human-readable JSON file from the Settings overflow menu.
+- Restores events and settings independently; each selected section replaces the current data.
+- Applies the resulting event retention after a restore and removes events outside the configured range.
+- After restoring settings, reconciles the background service and automation, then recreates the activity and Compose UI.
+- Uses the system document picker, so no storage permission is required.
+- Does not back up the derived device-name cache or internal automation runtime state.
+
 ### Sound-mode automation
 
 - Enable or disable automation.
@@ -117,6 +126,7 @@ Run the checks:
 | UI | Jetpack Compose, Material 3, Navigation Compose |
 | Dependency injection | Hilt 2.60.1 |
 | Persistence | Room 2.8.5, DataStore Preferences 1.3.0 |
+| Serialization | Kotlin Serialization 1.13.0 |
 | Background work | WorkManager 2.12.0, AlarmManager |
 | Async | Coroutines and StateFlow |
 | Build | Android Gradle Plugin 9.5.1, Compose BOM 2026.09.00 |
@@ -129,7 +139,7 @@ Run the checks:
 com.ryosoftware.bt_sound_manager
 ├── core/          # time and shared utilities
 ├── domain/        # models, repository contracts and pure use cases
-├── data/          # Room, DataStore, Bluetooth, notifications and repositories
+├── data/          # Room, DataStore, Bluetooth, notifications, backup and repositories
 ├── presentation/  # Compose screens, navigation, theme and ViewModels
 ├── service/       # foreground service, workers and automation coordinator
 ├── receiver/      # manifest receivers and notification actions
@@ -140,7 +150,7 @@ Only the `:app` module exists; layers are separated inside it.
 
 ## Testing
 
-- 50 unit tests covering automation planning, schedule windows, retention, event minimization, device merging, broadcast gating and ViewModel logic.
+- 69 unit tests covering automation planning, schedule windows, retention, event minimization, device merging, broadcast gating, ViewModel logic, JSON backup/restore and activity-recreation signalling.
 - 3 instrumented tests covering navigation, event rendering and Room persistence.
 - Lint completes with no errors.
 

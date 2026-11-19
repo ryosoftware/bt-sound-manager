@@ -39,6 +39,7 @@ La app incluye:
 12. Color dinámico Material You en Android 12+.
 13. Aviso de optimización de batería.
 14. Selector de dispositivos para la automatización, con nombres actualizados al entrar en la app.
+15. Copia de seguridad y restauración de eventos y ajustes en JSON legible mediante el selector de documentos del sistema.
 
 La aplicación no realiza peticiones de red ni declara el permiso `INTERNET`.
 
@@ -80,6 +81,7 @@ com.ryosoftware.bt_sound_manager
 │   ├── local/db/
 │   ├── local/prefs/
 │   ├── bluetooth/
+│   ├── backup/
 │   ├── notifications/
 │   └── repository/
 ├── presentation/
@@ -285,6 +287,7 @@ La verificación de Bluetooth real, DND, activación desde notificación y compo
 - Compose UI tests para estados, navegación y acciones principales.
 - Instrumentadas para persistencia y flujos básicos.
 - No afirmar que una función está probada si no se ha ejecutado.
+- Cubrir la codificación/decodificación del backup y la restauración selectiva con pruebas unitarias.
 
 ## 11. Convenciones de código
 

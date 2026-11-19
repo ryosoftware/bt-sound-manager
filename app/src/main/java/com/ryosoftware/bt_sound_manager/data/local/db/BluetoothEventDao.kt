@@ -10,8 +10,14 @@ interface BluetoothEventDao {
     @Query("SELECT * FROM bluetooth_events ORDER BY time_utc ASC, id ASC")
     fun observeAll(): Flow<List<BluetoothEventEntity>>
 
+    @Query("SELECT * FROM bluetooth_events ORDER BY time_utc ASC, id ASC")
+    suspend fun getAll(): List<BluetoothEventEntity>
+
     @Insert
     suspend fun insert(entity: BluetoothEventEntity): Long
+
+    @Insert
+    suspend fun insertAll(entities: List<BluetoothEventEntity>)
 
     @Query("DELETE FROM bluetooth_events WHERE id IN (:ids)")
     suspend fun deleteByIds(ids: Set<Long>)

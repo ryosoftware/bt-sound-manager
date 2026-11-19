@@ -39,6 +39,7 @@ com.ryosoftware.bt_sound_manager
 │   ├── local/db/
 │   ├── local/prefs/
 │   ├── bluetooth/
+│   ├── backup/
 │   ├── notifications/
 │   └── repository/
 ├── presentation/
@@ -117,6 +118,20 @@ SystemEventReceiver → MonitorBroadcastHandler (DEFERRED)
 Así el receiver termina en pocos cientos de milisegundos y el sistema puede ejecutar el cambio algo después de los 3 segundos.
 
 La reevaluación se dispara en arranque, actualización de la app, inicio de la app, cambio de usuario, cambio de filtro de interrupción, alarma de horario y conexión/desconexión. `AutomationCoordinator.apply()` se ejecuta en `Dispatchers.Default`, por lo que nunca bloquea el hilo principal. Nunca activa Bluetooth: si está apagado se evalúa como si no hubiera dispositivos conectados.
+
+### Copia de seguridad y restauración
+
+```text
+SettingsScreen → BackupRepository
+        ├── export(): eventos + ajustes → JSON legible → ContentResolver
+        └── read() / restore()
+                ├── SettingsRepository.replaceAll() (DataStore)
+                ├── BluetoothEventRepository.replaceAllEvents() (Room)
+                ├── pruneExpired() con la retención resultante
+                └── AppRecreationSignal → MainActivity.recreate()
+```
+
+`BackupJsonCodec` es un códec puro y testeable que serializa metadatos, eventos y ajustes. No exporta IDs de Room, la caché de nombres de dispositivos ni el estado interno de automatización. La restauración es sustitutiva por sección: si se seleccionan eventos se vacía la tabla antes de insertar; si se seleccionan ajustes se sobrescriben todas las claves conocidas. Después se aplica la retención y, si se restauraron ajustes, se sincroniza el servicio, se reevalúa la automatización y se solicita la recreación de la Activity para reconstruir la UI. `recreate()` no reinicia el proceso ni los singletons de Hilt.
 
 ## 4. Inyección de dependencias
 
@@ -207,6 +222,7 @@ Las notificaciones de dispositivo se emiten para cualquier dispositivo, sin filt
 - Navegación: `NavHost` con bottom navigation para Eventos y Ajustes; la app abre en Ajustes.
 - Ajustes muestra, cuando el permiso de Bluetooth está concedido, la card de estado con dispositivos conectados y control para activar o desactivar Bluetooth.
 - Ajustes concentra la gestión de permisos: Bluetooth, notificaciones, acceso a No molestar, alarmas exactas, optimización de batería y acceso directo a la información de la app.
+- El menú de tres puntos de Ajustes permite crear una copia de seguridad y restaurar eventos y ajustes mediante el selector de documentos del sistema.
 - `NavigationRail` en anchos de ventana de 600 dp o superiores.
 - Subpantallas: automatización y selección de dispositivos para la automatización.
 - Tema: `MonitorizeTheme` con modos Sistema/Claro/Oscuro y color dinámico en Android 12+.

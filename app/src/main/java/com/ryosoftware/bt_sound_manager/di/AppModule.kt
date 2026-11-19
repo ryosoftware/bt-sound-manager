@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.ryosoftware.bt_sound_manager.core.time.AppClock
 import com.ryosoftware.bt_sound_manager.core.time.SystemAppClock
+import com.ryosoftware.bt_sound_manager.data.backup.BackupRepositoryImpl
 import com.ryosoftware.bt_sound_manager.data.bluetooth.BluetoothRepositoryImpl
 import com.ryosoftware.bt_sound_manager.data.local.db.AppDatabase
 import com.ryosoftware.bt_sound_manager.data.local.db.BluetoothEventDao
@@ -22,6 +23,7 @@ import com.ryosoftware.bt_sound_manager.data.repository.BluetoothEventRepository
 import com.ryosoftware.bt_sound_manager.data.repository.DeviceRepositoryImpl
 import com.ryosoftware.bt_sound_manager.domain.repository.AutomationApplyScheduler
 import com.ryosoftware.bt_sound_manager.domain.repository.AutomationScheduler
+import com.ryosoftware.bt_sound_manager.domain.repository.BackupRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.BluetoothEventRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.BluetoothRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.DeviceRepository
@@ -86,6 +88,10 @@ abstract class BindingsModule {
     abstract fun bindBluetoothEventRepository(
         repository: BluetoothEventRepositoryImpl,
     ): BluetoothEventRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBackupRepository(repository: BackupRepositoryImpl): BackupRepository
 
     @Binds
     @Singleton

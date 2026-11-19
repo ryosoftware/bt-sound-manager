@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Gestor de Sonido BT</string>
+
+    <string name="nav_events">Eventos</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <string name="loading">Cargando…</string>
+    <string name="refresh">Recargar</string>
+    <string name="accept">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="allow">Permitir</string>
+    <string name="not_now">Ahora no</string>
+    <string name="error_generic">Se ha producido un error</string>
+
+    <string name="bluetooth_on">Bluetooth activado</string>
+    <string name="bluetooth_off">Bluetooth desactivado</string>
+    <string name="enable_bluetooth">Activar Bluetooth</string>
+    <string name="disable_bluetooth">Desactivar Bluetooth</string>
+    <string name="no_connected_devices">No hay dispositivos conectados</string>
+    <string name="connected">Conectado</string>
+    <string name="paired">Emparejado</string>
+
+    <string name="no_devices_selected">No hay dispositivos seleccionados</string>
+    <string name="automation_title">Modo de sonido automático</string>
+    <string name="background_service_stopped">Detenido</string>
+
+    <string name="events_title">Eventos Bluetooth</string>
+    <string name="event_bluetooth_on">Bluetooth activado</string>
+    <string name="event_bluetooth_off">Bluetooth desactivado</string>
+    <string name="event_device_connected">Dispositivo conectado</string>
+    <string name="event_device_disconnected">Dispositivo desconectado</string>
+    <string name="no_events">Todavía no hay eventos</string>
+    <string name="no_events_body">Los cambios de conexión Bluetooth aparecerán aquí.</string>
+    <string name="delete">Eliminar</string>
+    <string name="delete_all_events">Eliminar todos los eventos</string>
+    <string name="delete_visible_events">Eliminar eventos visibles</string>
+    <string name="delete_day_events">Eliminar este día</string>
+    <string name="delete_confirm_body">Esta acción no se puede deshacer. ¿Continuar?</string>
+    <string name="delete_confirm_day_body">Se eliminarán los eventos de %1$s. Esta acción no se puede deshacer.</string>
+    <string name="today">Hoy</string>
+    <string name="yesterday">Ayer</string>
+    <string name="filter_title">Mostrar eventos</string>
+    <string name="filter_types">Tipos de evento</string>
+    <string name="filter_devices">Dispositivos</string>
+    <string name="filter_all">Todos</string>
+    <string name="filter_none">Ninguno</string>
+    <string name="event_deleted">Eventos eliminados</string>
+    <string name="event_delete_error">No se han podido eliminar los eventos</string>
+
+    <string name="settings_title">Ajustes</string>
+    <string name="permissions_section">Permisos</string>
+    <string name="bluetooth_permissions">Permisos de Bluetooth</string>
+    <string name="app_info">Información de la app</string>
+    <string name="app_info_summary">Abrir los ajustes del sistema para esta app.</string>
+    <string name="notification_settings">Ajustes de notificación</string>
+    <string name="automation_section">Modo de sonido automático</string>
+    <string name="enable_automation">Activar automatización</string>
+    <string name="automation_enabled_summary">El modo de sonido se gestiona automáticamente dentro del horario.</string>
+    <string name="automation_disabled_summary">La app no cambiará el modo de sonido.</string>
+    <string name="background_section">Ejecución en segundo plano</string>
+    <string name="events_settings_section">Historial de eventos</string>
+    <string name="retention_days_title">Conservar eventos durante</string>
+    <string name="retention_days_summary">Los eventos más antiguos se eliminan automáticamente.</string>
+    <string name="background_optional_summary">Opcional, sólo se recomienda si la app no está funcionando correctamente.</string>
+    <string name="detect_bluetooth_events">Detección activa</string>
+    <string name="detect_bluetooth_events_summary">Ejecuta un servicio en segundo plano para detectar cambios con fiabilidad.</string>
+    <string name="reactivate_on_user_change">Reactivar al cambiar de usuario</string>
+    <string name="reactivate_on_user_change_summary">Intentar aplicar la automatización y activar Bluetooth al volver el usuario.</string>
+    <string name="appearance_section">Apariencia</string>
+    <string name="theme_mode">Tema</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="dynamic_color">Color dinámico</string>
+    <string name="dynamic_color_summary">Usar la paleta Material You del sistema en Android 12 o posterior.</string>
+    <string name="about_section">Versión %1$s</string>
+    <string name="github_title">GitHub</string>
+    <string name="github_summary">github.com/ryosoftware/bt-sound-manager</string>
+    <string name="battery_optimization">Optimización de batería</string>
+    <string name="exact_alarm_title">Alarmas exactas</string>
+    <string name="notification_policy_title">Acceso a No molestar</string>
+    <string name="notification_permission_required">Las notificaciones están desactivadas para esta app</string>
+
+    <string name="automation_screen_title">Automatización</string>
+    <string name="automation_schedule">Horario</string>
+    <string name="start_time">Hora de inicio</string>
+    <string name="end_time">Hora de fin</string>
+    <string name="all_day">Todo el día</string>
+    <string name="next_day_suffix">%1$s (día siguiente)</string>
+    <string name="automation_devices">Dispositivos</string>
+    <string name="all_bluetooth_devices">Todos los dispositivos Bluetooth</string>
+    <string name="selected_devices">Dispositivos seleccionados</string>
+    <string name="automation_modes">Modos de sonido</string>
+    <string name="mode_when_connected">Si hay dispositivos conectados</string>
+    <string name="mode_when_none">Si no hay dispositivos conectados</string>
+    <string name="force_mode">Forzar modo de interrupción</string>
+    <string name="force_mode_summary">Volver a aplicar el modo deseado aunque se haya cambiado manualmente.</string>
+    <string name="restore_media_volume">Restaurar volumen multimedia</string>
+    <string name="restore_media_volume_summary">Guardar el volumen multimedia antes de cambiar el modo y restaurarlo después.</string>
+    <string name="mode_selection_title">Elegir modo de sonido</string>
+    <string name="mode_normal">Normal</string>
+    <string name="mode_dnd">No molestar</string>
+    <string name="mode_alarms">Solo alarmas</string>
+    <string name="mode_silent">Silencio</string>
+    <string name="mode_conflict">Los dos modos deben ser diferentes</string>
+    <string name="automation_policy_required">Se necesita acceso a No molestar</string>
+    <string name="automation_policy_required_body">Para cambiar el modo de sonido, permite que esta app acceda a los ajustes de No molestar.</string>
+    <string name="time_picker_title">Seleccionar hora</string>
+
+    <string name="search_devices">Buscar dispositivos</string>
+    <string name="no_devices_found">No se han encontrado dispositivos</string>
+    <string name="no_paired_devices">No hay dispositivos Bluetooth emparejados o conectados.</string>
+
+    <string name="channel_connected">Notificaciones de dispositivos conectados</string>
+    <string name="channel_disconnected">Notificaciones de dispositivos desconectados</string>
+    <string name="channel_automation">Notificaciones de automatización</string>
+    <string name="channel_background">Servicio en segundo plano</string>
+    <string name="notification_connected_body">Dispositivo conectado</string>
+    <string name="notification_disconnected_body">Dispositivo desconectado</string>
+    <string name="notification_bluetooth_on_title">Bluetooth activado</string>
+    <string name="notification_bluetooth_on_body">El Bluetooth está activado.</string>
+    <string name="notification_bluetooth_off_title">Bluetooth desactivado</string>
+    <string name="notification_bluetooth_off_body">El Bluetooth está desactivado. Actívalo para conectar tus dispositivos.</string>
+    <string name="notification_automation_title">Modo de sonido: %1$s</string>
+    <string name="notification_automation_no_devices">No hay dispositivos monitorizados conectados</string>
+    <string name="notification_automation_bluetooth_off">El Bluetooth está desactivado</string>
+    <string name="notification_automation_one_device">\"%1$s\" está conectado</string>
+    <string name="notification_automation_outside_schedule">Fuera del horario de automatización</string>
+    <string name="notification_automation_wrong_profile">El perfil de sonido actual no es el esperado</string>
+    <string name="notification_automation_no_permissions">Permisos insuficientes para cambiar el modo de sonido</string>
+    <string name="action_disable_automation">Desactivar automatización</string>
+    <string name="action_enable_bluetooth">Activar Bluetooth</string>
+    <string name="notification_background_text">Monitorizando Bluetooth en segundo plano</string>
+
+    <string name="status_granted">Concedido</string>
+    <string name="status_not_granted">No concedido</string>
+    <string name="status_allowed">Permitidas</string>
+    <string name="status_not_allowed">No permitidas</string>
+    <string name="battery_optimizations_enabled">Activada</string>
+    <string name="battery_optimizations_disabled">Desactivada</string>
+    <string name="settings_background_running">La monitorización en segundo plano está activa</string>
+    <string name="settings_notifications_enabled">Las notificaciones están activadas</string>
+
+    <string name="cd_back">Atrás</string>
+    <string name="cd_filter">Filtrar eventos</string>
+    <string name="cd_delete">Eliminar eventos</string>
+    <string name="cd_bluetooth_on">Bluetooth activado</string>
+    <string name="cd_bluetooth_off">Bluetooth desactivado</string>
+    <string name="cd_event_icon">Icono del evento</string>
+    <string name="cd_search">Buscar</string>
+
+    <plurals name="selected_devices_count">
+        <item quantity="one">%1$d dispositivo seleccionado</item>
+        <item quantity="many">%1$d dispositivos seleccionados</item>
+        <item quantity="other">%1$d dispositivos seleccionados</item>
+    </plurals>
+
+    <plurals name="events_count">
+        <item quantity="one">%1$d evento</item>
+        <item quantity="many">%1$d eventos</item>
+        <item quantity="other">%1$d eventos</item>
+    </plurals>
+
+    <plurals name="retention_days_value">
+        <item quantity="one">%1$d día</item>
+        <item quantity="many">%1$d días</item>
+        <item quantity="other">%1$d días</item>
+    </plurals>
+
+    <plurals name="automation_more_devices">
+        <item quantity="one">\"%1$s\" y otro dispositivo monitorizado están conectados</item>
+        <item quantity="many">\"%1$s\" y otros %2$d dispositivos monitorizados están conectados</item>
+        <item quantity="other">\"%1$s\" y otros %2$d dispositivos monitorizados están conectados</item>
+    </plurals>
+
+</resources>

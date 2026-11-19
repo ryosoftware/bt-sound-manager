@@ -28,6 +28,7 @@ Cubren:
 - retención de eventos y días configurables;
 - minimización de pares de eventos;
 - fusión de dispositivos emparejados y conectados;
+- inclusión de dispositivos seleccionados aunque no estén emparejados ni conectados, con la dirección como nombre de reserva;
 - acoplamiento de las opciones de segundo plano;
 - gating del `MonitorBroadcastHandler` entre servicio y receiver;
 - encolado único de la automatización diferida con WorkManager;
@@ -43,7 +44,7 @@ Cubren:
 
 ### Resultado actual
 
-- **69 pruebas unitarias** ejecutadas.
+- **73 pruebas unitarias** ejecutadas.
 - **0 fallos**.
 - **0 omitidas**.
 

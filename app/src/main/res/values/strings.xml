@@ -120,6 +120,7 @@
     <string name="search_devices">Search devices</string>
     <string name="no_devices_found">No devices found</string>
     <string name="no_paired_devices">There are no paired or connected Bluetooth devices.</string>
+    <string name="device_not_available">Not available</string>
 
     <!-- Notifications -->
     <string name="channel_connected">Device connected notifications</string>

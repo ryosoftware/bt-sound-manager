@@ -151,7 +151,7 @@ private fun SelectableDeviceRow(
     val status = when {
         device.connected -> stringResource(R.string.connected)
         device.bonded -> stringResource(R.string.paired)
-        else -> null
+        else -> stringResource(R.string.device_not_available)
     }
     ListItem(
         modifier = Modifier.clickable(onClick = onToggle),
@@ -164,14 +164,14 @@ private fun SelectableDeviceRow(
         headlineContent = { Text(device.name) },
         supportingContent = {
             Column {
-                Text(device.address)
-                if (status != null) {
-                    Text(
-                        text = status,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
+                if (device.name != device.address) {
+                    Text(device.address)
                 }
+                Text(
+                    text = status,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
             }
         },
         trailingContent = {

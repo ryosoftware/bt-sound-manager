@@ -112,6 +112,7 @@
     <string name="search_devices">Buscar dispositivos</string>
     <string name="no_devices_found">No se han encontrado dispositivos</string>
     <string name="no_paired_devices">No hay dispositivos Bluetooth emparejados o conectados.</string>
+    <string name="device_not_available">No disponible</string>
 
     <string name="channel_connected">Notificaciones de dispositivos conectados</string>
     <string name="channel_disconnected">Notificaciones de dispositivos desconectados</string>

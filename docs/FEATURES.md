@@ -131,8 +131,9 @@ Reglas:
 ## 10. Selección de dispositivos
 
 - lista dispositivos emparejados, conectados y con nombre guardado;
+- los dispositivos seleccionados se muestran aunque ya no estén emparejados ni conectados, usando la dirección MAC como nombre de reserva;
 - búsqueda por nombre o dirección;
-- indicador de conectado/emparejado actualizado en vivo mediante los eventos ACL;
+- indicador de conectado, emparejado o no disponible, actualizado en vivo mediante los eventos ACL;
 - selección múltiple;
 - guardado automático para la automatización al salir con la flecha de la barra superior o con el gesto/botón atrás.
 

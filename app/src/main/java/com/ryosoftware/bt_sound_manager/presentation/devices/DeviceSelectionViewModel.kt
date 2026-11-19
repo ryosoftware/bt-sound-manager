@@ -82,6 +82,17 @@ class DeviceSelectionViewModel @Inject constructor(
                 ),
             )
         }
+        selectedDevices.forEach { address ->
+            merged.putIfAbsent(
+                address,
+                SelectableDevice(
+                    address = address,
+                    name = address,
+                    connected = false,
+                    bonded = false,
+                ),
+            )
+        }
         DeviceSelectionUiState(
             loading = isLoading,
             devices = merged.values
@@ -116,26 +127,11 @@ class DeviceSelectionViewModel @Inject constructor(
                     .toSet()
 
                 val names = deviceRepository.observeDeviceNames().first()
-                val merged = linkedMapOf<String, SelectableDevice>()
-                bluetoothDevices.forEach { device ->
-                    merged[device.address] = SelectableDevice(
-                        address = device.address,
-                        name = names[device.address] ?: device.name,
-                        connected = device.isConnected,
-                        bonded = device.isBonded,
-                    )
-                }
-                names.forEach { (address, name) ->
-                    if (address !in merged) {
-                        merged[address] = SelectableDevice(
-                            address = address,
-                            name = name,
-                            connected = false,
-                            bonded = false,
-                        )
-                    }
-                }
-                devices.value = merged.values.sortedBy { it.name.lowercase() }
+                devices.value = mergeSelectableDevices(
+                    bluetoothDevices = bluetoothDevices,
+                    cachedNames = names,
+                    selectedAddresses = selected.value,
+                )
             } finally {
                 loading.value = false
             }

@@ -93,7 +93,7 @@ class MonitorNotificationRepositoryImpl @Inject constructor(
 
     override fun showBluetoothEnabled() {
         val notification = NotificationCompat.Builder(context, CHANNEL_CONNECTED)
-            .setSmallIcon(R.drawable.ic_stat_bluetooth)
+            .setSmallIcon(smallIconForChannel(CHANNEL_CONNECTED))
             .setContentTitle(context.getString(R.string.notification_bluetooth_on_title))
             .setContentText(context.getString(R.string.notification_bluetooth_on_body))
             .setStyle(
@@ -118,7 +118,7 @@ class MonitorNotificationRepositoryImpl @Inject constructor(
             pendingIntentFlags(),
         )
         val notification = NotificationCompat.Builder(context, CHANNEL_DISCONNECTED)
-            .setSmallIcon(R.drawable.ic_stat_bluetooth)
+            .setSmallIcon(smallIconForChannel(CHANNEL_DISCONNECTED))
             .setContentTitle(context.getString(R.string.notification_bluetooth_off_title))
             .setContentText(context.getString(R.string.notification_bluetooth_off_body))
             .setStyle(
@@ -157,7 +157,7 @@ class MonitorNotificationRepositoryImpl @Inject constructor(
             )
         }
         val builder = NotificationCompat.Builder(context, CHANNEL_AUTOMATION)
-            .setSmallIcon(R.drawable.ic_stat_bluetooth)
+            .setSmallIcon(smallIconForChannel(CHANNEL_AUTOMATION))
             .setContentTitle(title)
             .setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))
@@ -217,7 +217,7 @@ class MonitorNotificationRepositoryImpl @Inject constructor(
 
     override fun buildBackgroundNotification(): Notification =
         NotificationCompat.Builder(context, CHANNEL_BACKGROUND)
-            .setSmallIcon(R.drawable.ic_stat_bluetooth)
+            .setSmallIcon(smallIconForChannel(CHANNEL_BACKGROUND))
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(context.getString(R.string.notification_background_text))
             .setContentIntent(mainPendingIntent(REQUEST_BACKGROUND, null))
@@ -257,13 +257,21 @@ class MonitorNotificationRepositoryImpl @Inject constructor(
         manager.createNotificationChannel(channel)
     }
 
+    private fun smallIconForChannel(channelId: String): Int = when (channelId) {
+        CHANNEL_BACKGROUND -> R.drawable.ic_stat_notification_background_service
+        CHANNEL_CONNECTED -> R.drawable.ic_stat_notification_device_connected
+        CHANNEL_DISCONNECTED -> R.drawable.ic_stat_notification_device_disconnected
+        CHANNEL_AUTOMATION -> R.drawable.ic_stat_notification_automation
+        else -> R.drawable.ic_stat_bluetooth
+    }
+
     private fun deviceNotification(
         channel: String,
         title: String,
         body: String,
         requestCode: Int,
     ): Notification = NotificationCompat.Builder(context, channel)
-        .setSmallIcon(R.drawable.ic_stat_bluetooth)
+        .setSmallIcon(smallIconForChannel(channel))
         .setContentTitle(title)
         .setContentText(body)
         .setStyle(NotificationCompat.BigTextStyle().bigText(body))

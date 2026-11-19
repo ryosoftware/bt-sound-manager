@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ryosoftware.bt_sound_manager.R
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEvent
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEventType
 import com.ryosoftware.bt_sound_manager.presentation.theme.EventBluetoothOnContainer
@@ -96,15 +98,14 @@ fun EventRow(
                         .background(containerColor, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
+                    val eventIconPainter = when (event.type) {
+                        BluetoothEventType.DEVICE_CONNECTED -> painterResource(R.drawable.ic_bluetooth_device_connected)
+                        BluetoothEventType.DEVICE_DISCONNECTED -> painterResource(R.drawable.ic_bluetooth_device_disconnected)
+                        BluetoothEventType.BLUETOOTH_ON -> painterResource(R.drawable.ic_bluetooth_on)
+                        BluetoothEventType.BLUETOOTH_OFF -> painterResource(R.drawable.ic_bluetooth_off)
+                    }
                     Icon(
-                        imageVector = if (
-                            event.type == BluetoothEventType.BLUETOOTH_OFF ||
-                            event.type == BluetoothEventType.DEVICE_DISCONNECTED
-                        ) {
-                            Icons.Outlined.BluetoothDisabled
-                        } else {
-                            Icons.Outlined.Bluetooth
-                        },
+                        painter = eventIconPainter,
                         contentDescription = stringResource(com.ryosoftware.bt_sound_manager.R.string.cd_event_icon),
                         tint = contentColor,
                         modifier = Modifier.size(22.dp),

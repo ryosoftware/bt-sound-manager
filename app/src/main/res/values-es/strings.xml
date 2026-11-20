@@ -102,7 +102,7 @@
     <string name="mode_when_connected">Si hay dispositivos conectados</string>
     <string name="mode_when_none">Si no hay dispositivos conectados</string>
     <string name="force_mode">Forzar modo de interrupción</string>
-    <string name="force_mode_summary">Volver a aplicar el modo deseado aunque se haya cambiado manualmente.</string>
+    <string name="force_mode_summary">Aplicar el modo escogido aunque el modo activo no haya sido establecido por la app.</string>
     <string name="restore_media_volume">Restaurar volumen multimedia</string>
     <string name="restore_media_volume_summary">Guardar el volumen multimedia antes de cambiar el modo y restaurarlo después.</string>
     <string name="mode_selection_title">Elegir modo de sonido</string>
@@ -140,6 +140,9 @@
     <string name="action_disable_automation">Desactivar automatización</string>
     <string name="action_enable_bluetooth">Activar Bluetooth</string>
     <string name="notification_background_text">Monitorizando Bluetooth en segundo plano</string>
+    <string name="notification_background_text_all_day">Monitorizando Bluetooth en segundo plano · Automatización: todo el día</string>
+    <string name="notification_background_text_inside_schedule">Monitorizando Bluetooth en segundo plano · Automatización: dentro del horario</string>
+    <string name="notification_background_text_outside_schedule">Monitorizando Bluetooth en segundo plano · Automatización: fuera del horario</string>
 
     <string name="status_granted">Concedido</string>
     <string name="status_not_granted">No concedido</string>

@@ -151,6 +151,7 @@ Incluye:
 - Al conectarse un dispositivo se oculta la notificación de desconexión, y viceversa.
 - Al encenderse Bluetooth se muestra una notificación informativa.
 - Al apagarse Bluetooth se oculta la notificación de conexión y se muestra una notificación accionable para activarlo.
+- La notificación del servicio en segundo plano indica si la automatización está todo el día, dentro del horario o fuera del horario.
 
 ### Eventos
 
@@ -184,7 +185,7 @@ Incluye:
   - inicio de la app
   - cambio de usuario
   - cambio del filtro de interrupción
-  - alarma de inicio de horario
+  - alarmas de inicio y fin de horario
   - conexión/desconexión de dispositivos
 - Al reevaluar nunca se activa Bluetooth: si está apagado se aplica el modo configurado para “sin dispositivos conectados”.
 - La reevaluación se ejecuta siempre en segundo plano.
@@ -224,7 +225,7 @@ No se declaran permisos de red, cuentas, superposición, almacenamiento ni publi
 - `SystemEventReceiver`: eventos Bluetooth, DND, usuario y apagado.
 - `BootReceiver`: arranque y actualización de la app.
 - `NotificationActionReceiver`: acciones de notificaciones.
-- `AutomationAlarmReceiver`: inicio del horario de automatización.
+- `AutomationAlarmReceiver`: inicio y fin del horario de automatización.
 - `BluetoothEnableProxyActivity`: solicitud de activación de Bluetooth desde una notificación.
 
 ### Alarmas
@@ -232,7 +233,7 @@ No se declaran permisos de red, cuentas, superposición, almacenamiento ni publi
 - Se usa `AlarmManager`.
 - Se comprueba `canScheduleExactAlarms()`.
 - Si no hay permiso de alarmas exactas, se usa un fallback inexacto.
-- La alarma se reprograma en cada evaluación.
+- La alarma se reprograma en cada evaluación para el siguiente inicio o fin del horario.
 
 ## 8. Interfaz y navegación
 

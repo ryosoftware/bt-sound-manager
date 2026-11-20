@@ -89,4 +89,69 @@ class ScheduleWindowTest {
         val expected = Instant.parse("2026-01-16T08:00:00Z").toEpochMilli()
         assertEquals(expected, ScheduleWindow.nextStartMillis(now, settings(), zone))
     }
+
+    @Test
+    fun allDayHasNoEndOrBoundary() {
+        val now = Instant.parse("2026-01-15T08:00:00Z").toEpochMilli()
+        assertNull(ScheduleWindow.nextEndMillis(now, settings(allDay = true), zone))
+        assertNull(ScheduleWindow.nextBoundaryMillis(now, settings(allDay = true), zone))
+    }
+
+    @Test
+    fun nextEndIsFirstMinuteOutsideWindow() {
+        val now = Instant.parse("2026-01-15T09:00:00Z").toEpochMilli()
+        val expected = Instant.parse("2026-01-15T18:01:00Z").toEpochMilli()
+        assertEquals(expected, ScheduleWindow.nextEndMillis(now, settings(), zone))
+    }
+
+    @Test
+    fun nextBoundaryChoosesStartBeforeWindow() {
+        val now = Instant.parse("2026-01-15T07:00:00Z").toEpochMilli()
+        val expected = Instant.parse("2026-01-15T08:00:00Z").toEpochMilli()
+        assertEquals(expected, ScheduleWindow.nextBoundaryMillis(now, settings(), zone))
+    }
+
+    @Test
+    fun nextBoundaryChoosesEndInsideWindow() {
+        val now = Instant.parse("2026-01-15T09:00:00Z").toEpochMilli()
+        val expected = Instant.parse("2026-01-15T18:01:00Z").toEpochMilli()
+        assertEquals(expected, ScheduleWindow.nextBoundaryMillis(now, settings(), zone))
+    }
+
+    @Test
+    fun nextBoundaryChoosesTomorrowStartAfterWindow() {
+        val now = Instant.parse("2026-01-15T19:00:00Z").toEpochMilli()
+        val expected = Instant.parse("2026-01-16T08:00:00Z").toEpochMilli()
+        assertEquals(expected, ScheduleWindow.nextBoundaryMillis(now, settings(), zone))
+    }
+
+    @Test
+    fun nextBoundaryHandlesCrossingMidnightInside() {
+        val crossing = settings(start = 22 * 60, end = 6 * 60)
+        val now = Instant.parse("2026-01-15T23:00:00Z").toEpochMilli()
+        val expected = Instant.parse("2026-01-16T06:01:00Z").toEpochMilli()
+        assertEquals(expected, ScheduleWindow.nextBoundaryMillis(now, crossing, zone))
+    }
+
+    @Test
+    fun nextBoundaryHandlesCrossingMidnightOutside() {
+        val crossing = settings(start = 22 * 60, end = 6 * 60)
+        val now = Instant.parse("2026-01-15T12:00:00Z").toEpochMilli()
+        val expected = Instant.parse("2026-01-15T22:00:00Z").toEpochMilli()
+        assertEquals(expected, ScheduleWindow.nextBoundaryMillis(now, crossing, zone))
+    }
+
+    @Test
+    fun nextBoundaryAtExactEndWaitsForFirstOutsideMinute() {
+        val now = Instant.parse("2026-01-15T18:00:00Z").toEpochMilli()
+        val expected = Instant.parse("2026-01-15T18:01:00Z").toEpochMilli()
+        assertEquals(expected, ScheduleWindow.nextBoundaryMillis(now, settings(), zone))
+    }
+
+    @Test
+    fun nextBoundaryAfterEndChoosesTomorrowStart() {
+        val now = Instant.parse("2026-01-15T18:01:00Z").toEpochMilli()
+        val expected = Instant.parse("2026-01-16T08:00:00Z").toEpochMilli()
+        assertEquals(expected, ScheduleWindow.nextBoundaryMillis(now, settings(), zone))
+    }
 }

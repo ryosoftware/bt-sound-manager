@@ -24,12 +24,12 @@ class AutomationSchedulerImpl @Inject constructor(
     private val alarmManager: AlarmManager? =
         context.getSystemService(AlarmManager::class.java)
 
-    override fun scheduleNextStart(settings: AutomationSettings) {
+    override fun scheduleNextTransition(settings: AutomationSettings) {
         if (!settings.enabled || settings.allDay) {
             cancel()
             return
         }
-        val nextStart = ScheduleWindow.nextStartMillis(
+        val nextTransition = ScheduleWindow.nextBoundaryMillis(
             nowMillis = clock.nowMillis(),
             settings = settings,
             zone = clock.zoneId(),
@@ -38,12 +38,20 @@ class AutomationSchedulerImpl @Inject constructor(
         val pendingIntent = alarmPendingIntent()
         try {
             if (Build.VERSION.SDK_INT >= 31 && !manager.canScheduleExactAlarms()) {
-                manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextStart, pendingIntent)
+                manager.setAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    nextTransition,
+                    pendingIntent,
+                )
             } else {
-                manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextStart, pendingIntent)
+                manager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    nextTransition,
+                    pendingIntent,
+                )
             }
         } catch (_: SecurityException) {
-            manager.set(AlarmManager.RTC_WAKEUP, nextStart, pendingIntent)
+            manager.set(AlarmManager.RTC_WAKEUP, nextTransition, pendingIntent)
         }
     }
 

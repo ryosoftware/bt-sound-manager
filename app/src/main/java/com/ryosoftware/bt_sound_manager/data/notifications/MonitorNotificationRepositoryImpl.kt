@@ -19,6 +19,7 @@ import com.ryosoftware.bt_sound_manager.MainActivity
 import com.ryosoftware.bt_sound_manager.R
 import com.ryosoftware.bt_sound_manager.core.util.AppActions
 import com.ryosoftware.bt_sound_manager.core.util.labelRes
+import com.ryosoftware.bt_sound_manager.domain.model.AutomationScheduleStatus
 import com.ryosoftware.bt_sound_manager.domain.model.InterruptMode
 import com.ryosoftware.bt_sound_manager.domain.repository.MonitorNotificationRepository
 import com.ryosoftware.bt_sound_manager.receiver.NotificationActionReceiver
@@ -215,17 +216,39 @@ class MonitorNotificationRepositoryImpl @Inject constructor(
         notificationManager?.cancel(ID_AUTOMATION)
     }
 
-    override fun buildBackgroundNotification(): Notification =
-        NotificationCompat.Builder(context, CHANNEL_BACKGROUND)
+    override fun buildBackgroundNotification(status: AutomationScheduleStatus?): Notification {
+        val text = backgroundNotificationText(status)
+        return NotificationCompat.Builder(context, CHANNEL_BACKGROUND)
             .setSmallIcon(smallIconForChannel(CHANNEL_BACKGROUND))
             .setContentTitle(context.getString(R.string.app_name))
-            .setContentText(context.getString(R.string.notification_background_text))
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setContentIntent(mainPendingIntent(REQUEST_BACKGROUND, null))
             .setOngoing(true)
             .setAutoCancel(false)
+            .setOnlyAlertOnce(true)
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .build()
+    }
+
+    override fun updateBackgroundNotification(status: AutomationScheduleStatus?) {
+        notify(ID_BACKGROUND, buildBackgroundNotification(status))
+    }
+
+    private fun backgroundNotificationText(status: AutomationScheduleStatus?): String =
+        context.getString(
+            when (status) {
+                AutomationScheduleStatus.ALL_DAY -> R.string.notification_background_text_all_day
+                AutomationScheduleStatus.INSIDE_SCHEDULE ->
+                    R.string.notification_background_text_inside_schedule
+
+                AutomationScheduleStatus.OUTSIDE_SCHEDULE ->
+                    R.string.notification_background_text_outside_schedule
+
+                null -> R.string.notification_background_text
+            },
+        )
 
     private fun createChannel(
         id: String,

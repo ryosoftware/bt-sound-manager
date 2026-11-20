@@ -109,7 +109,7 @@
     <string name="mode_when_connected">When devices are connected</string>
     <string name="mode_when_none">When no device is connected</string>
     <string name="force_mode">Force interruption mode</string>
-    <string name="force_mode_summary">Reapply the selected mode even if it has been changed manually.</string>
+    <string name="force_mode_summary">Apply selected mode even if current mode hasn\'t been applied by this app.</string>
     <string name="restore_media_volume">Restore media volume</string>
     <string name="restore_media_volume_summary">Save the media volume before changing the mode and restore it afterward.</string>
     <string name="mode_selection_title">Choose a sound mode</string>
@@ -149,6 +149,9 @@
     <string name="action_disable_automation">Disable automation</string>
     <string name="action_enable_bluetooth">Enable Bluetooth</string>
     <string name="notification_background_text">Monitoring Bluetooth in the background</string>
+    <string name="notification_background_text_all_day">Monitoring Bluetooth in the background · Automation: all day</string>
+    <string name="notification_background_text_inside_schedule">Monitoring Bluetooth in the background · Automation: within schedule</string>
+    <string name="notification_background_text_outside_schedule">Monitoring Bluetooth in the background · Automation: outside schedule</string>
 
     <string name="status_granted">Granted</string>
     <string name="status_not_granted">Not granted</string>

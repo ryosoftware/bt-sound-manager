@@ -1,6 +1,7 @@
 package com.ryosoftware.bt_sound_manager.domain.repository
 
 import android.app.Notification
+import com.ryosoftware.bt_sound_manager.domain.model.AutomationScheduleStatus
 import com.ryosoftware.bt_sound_manager.domain.model.InterruptMode
 
 interface MonitorNotificationRepository {
@@ -30,5 +31,7 @@ interface MonitorNotificationRepository {
 
     fun hideAutomationNotification()
 
-    fun buildBackgroundNotification(): Notification
+    fun buildBackgroundNotification(status: AutomationScheduleStatus?): Notification
+
+    fun updateBackgroundNotification(status: AutomationScheduleStatus?)
 }

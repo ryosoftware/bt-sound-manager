@@ -8,8 +8,10 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import androidx.core.content.ContextCompat
+import com.ryosoftware.bt_sound_manager.core.time.AppClock
 import com.ryosoftware.bt_sound_manager.domain.repository.MonitorNotificationRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.SettingsRepository
+import com.ryosoftware.bt_sound_manager.domain.usecase.AutomationScheduleStatusResolver
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +32,12 @@ class MonitorForegroundService : Service() {
 
     @Inject
     lateinit var notificationRepository: MonitorNotificationRepository
+
+    @Inject
+    lateinit var statusHolder: AutomationStatusHolder
+
+    @Inject
+    lateinit var clock: AppClock
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -53,6 +61,19 @@ class MonitorForegroundService : Service() {
         notificationRepository.ensureChannels()
         startAsForeground()
         registerMonitorReceiver()
+        serviceScope.launch {
+            val automation = settingsRepository.snapshot().automation
+            statusHolder.update(
+                AutomationScheduleStatusResolver.resolve(
+                    settings = automation,
+                    nowMillis = clock.nowMillis(),
+                    zone = clock.zoneId(),
+                ),
+            )
+            statusHolder.status.collectLatest { status ->
+                notificationRepository.updateBackgroundNotification(status)
+            }
+        }
         serviceScope.launch {
             settingsRepository.settings.collectLatest { settings ->
                 if (!settings.background.anyEnabled) stopSelf()
@@ -79,7 +100,9 @@ class MonitorForegroundService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun startAsForeground() {
-        val notification = notificationRepository.buildBackgroundNotification()
+        val notification = notificationRepository.buildBackgroundNotification(
+            statusHolder.status.value,
+        )
         if (Build.VERSION.SDK_INT >= 34) {
             startForeground(
                 NOTIFICATION_ID,

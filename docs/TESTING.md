@@ -27,6 +27,8 @@ Cubren:
 - creación de eventos de automatización con causa, modo y primer dispositivo conectado;
 - mapeo de iconos de los modos aplicados;
 - ventana horaria, incluida la franja que cruza medianoche;
+- cálculo del siguiente inicio, siguiente fin y siguiente transición del horario;
+- estado de automatización todo el día, dentro y fuera del horario;
 - retención de eventos y días configurables;
 - minimización de pares de eventos;
 - fusión de dispositivos emparejados y conectados;
@@ -46,7 +48,7 @@ Cubren:
 
 ### Resultado actual
 
-- **79 pruebas unitarias** ejecutadas.
+- **95 pruebas unitarias** ejecutadas.
 - **0 fallos**.
 - **0 omitidas**.
 

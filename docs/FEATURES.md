@@ -35,7 +35,8 @@ Comportamiento:
 - al encenderse Bluetooth se muestra una notificación informativa;
 - al apagarse Bluetooth se oculta la de conexión y se muestra una notificación con acción para activarlo;
 - las notificaciones de dispositivo abren el historial;
-- la notificación de automatización permite desactivarla, activar Bluetooth o abrir el acceso a No molestar.
+- la notificación de automatización permite desactivarla, activar Bluetooth o abrir el acceso a No molestar;
+- al entrar y salir del horario de automatización se actualizan la notificación de automatización y la del servicio en segundo plano.
 
 ## 4. Historial de eventos
 
@@ -90,7 +91,7 @@ Reglas:
 - cada cambio real del modo se registra en el historial con la causa, el modo aplicado y el primer dispositivo monitorizado conectado cuando corresponde;
 - si el usuario cambia manualmente el modo y “forzar” está activo, se reaplica;
 - se guarda el volumen multimedia antes de cambiar el modo y se restaura si la opción está activa;
-- se reevalúa en arranque (con 15 segundos de retraso), actualización de la app, inicio de la app, cambio de usuario, cambio de filtro de interrupción, alarma de inicio del horario y eventos de conexión/desconexión;
+- se reevalúa en arranque (con 15 segundos de retraso), actualización de la app, inicio de la app, cambio de usuario, cambio de filtro de interrupción, alarmas de inicio y fin del horario y eventos de conexión/desconexión;
 - al reevaluar nunca se activa Bluetooth: si está apagado se aplica el modo configurado para “sin dispositivos conectados”.
 
 ## 6. Servicio de segundo plano
@@ -98,6 +99,7 @@ Reglas:
 - Se inicia cuando está activa alguna de las opciones de detección.
 - Se detiene cuando ambas están desactivadas.
 - Muestra una notificación persistente mientras está en ejecución.
+- La notificación indica si la automatización está todo el día, dentro del horario o fuera del horario.
 - Detecta Bluetooth, cambios de filtro de interrupción, cambios de usuario y apagado del dispositivo.
 - Si el servicio está en ejecución, evita que el receptor del manifiesto procese los mismos eventos.
 

@@ -17,6 +17,7 @@ import com.ryosoftware.bt_sound_manager.domain.repository.VolumeRepository
 import com.ryosoftware.bt_sound_manager.domain.usecase.AutomationEventFactory
 import com.ryosoftware.bt_sound_manager.domain.usecase.AutomationOutcome
 import com.ryosoftware.bt_sound_manager.domain.usecase.AutomationPlanner
+import com.ryosoftware.bt_sound_manager.domain.usecase.AutomationScheduleStatusResolver
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Instant
 import javax.inject.Inject
@@ -35,6 +36,7 @@ class AutomationCoordinator @Inject constructor(
     private val interruptModeRepository: InterruptModeRepository,
     private val volumeRepository: VolumeRepository,
     private val notificationRepository: MonitorNotificationRepository,
+    private val statusHolder: AutomationStatusHolder,
     private val scheduler: AutomationScheduler,
     private val clock: AppClock,
 ) {
@@ -56,6 +58,7 @@ class AutomationCoordinator @Inject constructor(
         val settings = settingsRepository.snapshot()
         val automation = settings.automation
         if (!automation.enabled && !doNotCheckEnabled) {
+            statusHolder.update(null)
             scheduler.cancel()
             notificationRepository.hideAutomationNotification()
             return
@@ -66,6 +69,9 @@ class AutomationCoordinator @Inject constructor(
             .atZone(clock.zoneId())
             .toLocalTime()
             .let { it.hour * 60 + it.minute }
+        statusHolder.update(
+            AutomationScheduleStatusResolver.resolve(automation, minuteOfDay),
+        )
         val bluetoothEnabled = bluetoothRepository.isEnabled()
         val connected = if (bluetoothEnabled) bluetoothRepository.connectedDevices() else emptyList()
         val monitoredConnected = connected.filter { automation.isMonitored(it) }
@@ -158,7 +164,7 @@ class AutomationCoordinator @Inject constructor(
             }
         }
 
-        scheduler.scheduleNextStart(automation)
+        scheduler.scheduleNextTransition(automation)
     }
 
     suspend fun applyDelayed(

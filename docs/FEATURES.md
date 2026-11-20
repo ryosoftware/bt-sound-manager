@@ -44,7 +44,10 @@ Tipos de evento:
 - Bluetooth activado;
 - Bluetooth desactivado;
 - dispositivo conectado;
-- dispositivo desconectado.
+- dispositivo desconectado;
+- modo automático aplicado por dispositivo monitorizado conectado;
+- modo automático aplicado por ausencia de dispositivos conectados;
+- modo automático aplicado por Bluetooth desactivado.
 
 Funciones:
 
@@ -52,6 +55,8 @@ Funciones:
 - filtros por tipo de evento y por dispositivo;
 - borrado de eventos visibles, de un día o de todo el historial;
 - nombre resuelto por nombre actual guardado, nombre del evento o dirección;
+- eventos de automatización con el texto «Se activa el modo “X” porque “Y” está conectado», «… porque no hay dispositivos conectados» o «… porque el Bluetooth está desactivado»;
+- icono del modo aplicado en los eventos de automatización;
 - retención configurable entre 3 y 90 días, 7 por defecto, desde la medianoche local;
 - ocultación de pares de conexión/desconexión separados por menos de un segundo.
 
@@ -82,6 +87,7 @@ Reglas:
 - si el servicio no está activo, el receiver delega el cambio en WorkManager con un retraso mínimo de 3 segundos;
 - se descarta el evento si el estado del dispositivo vuelve a cambiar;
 - si el modo actual ya es el deseado, no se vuelve a aplicar;
+- cada cambio real del modo se registra en el historial con la causa, el modo aplicado y el primer dispositivo monitorizado conectado cuando corresponde;
 - si el usuario cambia manualmente el modo y “forzar” está activo, se reaplica;
 - se guarda el volumen multimedia antes de cambiar el modo y se restaura si la opción está activa;
 - se reevalúa en arranque (con 15 segundos de retraso), actualización de la app, inicio de la app, cambio de usuario, cambio de filtro de interrupción, alarma de inicio del horario y eventos de conexión/desconexión;

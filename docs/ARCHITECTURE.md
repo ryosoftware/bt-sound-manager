@@ -98,6 +98,7 @@ AutomationCoordinator.apply()
         ├── AutomationPlanner.plan()
         ├── InterruptModeRepository.setMode()
         ├── RuntimeStateRepository.saveAppliedMode()
+        ├── BluetoothEventRepository.addEvent() (solo cambios reales)
         ├── MonitorNotificationRepository.showAutomationNotification()
         └── AutomationScheduler.scheduleNextStart()
 ```
@@ -131,7 +132,7 @@ SettingsScreen → BackupRepository
                 └── AppRecreationSignal → MainActivity.recreate()
 ```
 
-`BackupJsonCodec` es un códec puro y testeable que serializa metadatos, eventos y ajustes. No exporta IDs de Room, la caché de nombres de dispositivos ni el estado interno de automatización. La restauración es sustitutiva por sección: si se seleccionan eventos se vacía la tabla antes de insertar; si se seleccionan ajustes se sobrescriben todas las claves conocidas. Después se aplica la retención y, si se restauraron ajustes, se sincroniza el servicio, se reevalúa la automatización y se solicita la recreación de la Activity para reconstruir la UI. `recreate()` no reinicia el proceso ni los singletons de Hilt.
+`BackupJsonCodec` es un códec puro y testeable que serializa metadatos, eventos y ajustes, incluido el modo aplicado en los eventos de automatización. No exporta IDs de Room, la caché de nombres de dispositivos ni el estado interno de automatización. La restauración es sustitutiva por sección: si se seleccionan eventos se vacía la tabla antes de insertar; si se seleccionan ajustes se sobrescriben todas las claves conocidas. Después se aplica la retención y, si se restauraron ajustes, se sincroniza el servicio, se reevalúa la automatización y se solicita la recreación de la Activity para reconstruir la UI. `recreate()` no reinicia el proceso ni los singletons de Hilt.
 
 ## 4. Inyección de dependencias
 
@@ -151,8 +152,10 @@ Hilt centraliza la construcción de:
 
 Base de datos `bt_sound_manager.db`:
 
-- `bluetooth_events`: id, tiempo UTC, tipo de evento, dirección y nombre del dispositivo.
+- `bluetooth_events`: id, tiempo UTC, tipo de evento, dirección, nombre del dispositivo y modo aplicado (nullable, para eventos de automatización).
 - `device_names`: dirección como clave primaria y nombre guardado.
+
+La base de datos usa versión 2. La migración 1 → 2 añade la columna nullable `mode` sin perder los eventos existentes.
 
 La retención se aplica al insertar un evento y al cambiar el ajuste: se eliminan los anteriores a la medianoche local actual menos los días configurados (3 a 90, 7 por defecto).
 

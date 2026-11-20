@@ -2,6 +2,7 @@ package com.ryosoftware.bt_sound_manager.presentation.components
 
 import android.content.Context
 import android.text.format.DateFormat
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.ryosoftware.bt_sound_manager.R
 import com.ryosoftware.bt_sound_manager.core.util.labelRes
@@ -64,6 +65,18 @@ fun eventTypeLabelRes(type: BluetoothEventType): Int = when (type) {
     BluetoothEventType.BLUETOOTH_OFF -> R.string.event_bluetooth_off
     BluetoothEventType.DEVICE_CONNECTED -> R.string.event_device_connected
     BluetoothEventType.DEVICE_DISCONNECTED -> R.string.event_device_disconnected
+    BluetoothEventType.AUTOMATION_APPLIED_CONNECTED -> R.string.event_automation_connected
+    BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES -> R.string.event_automation_no_devices
+    BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF -> R.string.event_automation_bluetooth_off
+}
+
+@DrawableRes
+fun automationModeIconRes(mode: InterruptMode?): Int = when (mode) {
+    InterruptMode.NORMAL -> R.drawable.ic_normal_mode_applied
+    InterruptMode.DO_NOT_DISTURB -> R.drawable.ic_dnd_mode_applied
+    InterruptMode.ALARMS_ONLY -> R.drawable.ic_only_alarms_mode_applied
+    InterruptMode.SILENT_ALL -> R.drawable.ic_silent_mode_applied
+    null -> R.drawable.ic_normal_mode_applied
 }
 
 fun isScheduleCrossingMidnight(startMinuteOfDay: Int, endMinuteOfDay: Int): Boolean =

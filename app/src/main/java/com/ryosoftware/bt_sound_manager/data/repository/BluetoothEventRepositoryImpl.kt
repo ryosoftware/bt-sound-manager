@@ -7,6 +7,7 @@ import com.ryosoftware.bt_sound_manager.data.local.db.BluetoothEventDao
 import com.ryosoftware.bt_sound_manager.data.local.db.BluetoothEventEntity
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEvent
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEventType
+import com.ryosoftware.bt_sound_manager.domain.model.InterruptMode
 import com.ryosoftware.bt_sound_manager.domain.repository.BluetoothEventRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.SettingsRepository
 import com.ryosoftware.bt_sound_manager.domain.usecase.EventRetention
@@ -77,6 +78,7 @@ private fun BluetoothEventEntity.toDomain(): BluetoothEvent? {
         type = type,
         deviceAddress = deviceAddress,
         deviceName = deviceName,
+        mode = InterruptMode.fromStorage(mode),
     )
 }
 
@@ -85,4 +87,5 @@ private fun BluetoothEvent.toEntity(): BluetoothEventEntity = BluetoothEventEnti
     eventType = type.code,
     deviceAddress = deviceAddress,
     deviceName = deviceName,
+    mode = mode?.storageValue,
 )

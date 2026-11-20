@@ -24,6 +24,8 @@ La verificación se organiza en cuatro niveles:
 Cubren:
 
 - planificación de la automatización;
+- creación de eventos de automatización con causa, modo y primer dispositivo conectado;
+- mapeo de iconos de los modos aplicados;
 - ventana horaria, incluida la franja que cruza medianoche;
 - retención de eventos y días configurables;
 - minimización de pares de eventos;
@@ -35,7 +37,7 @@ Cubren:
 - despacho del worker de automatización a las operaciones del coordinador;
 - filtrado y borrado en `EventsViewModel`;
 - reevaluación de la automatización al iniciar la app en `MainViewModel`;
-- codificación y decodificación del JSON de copia de seguridad;
+- codificación y decodificación del JSON de copia de seguridad, incluido el modo de los eventos de automatización;
 - restauración selectiva de eventos y ajustes;
 - aplicación de la retención después de restaurar;
 - limpieza de la tabla al restaurar una copia sin eventos;
@@ -44,7 +46,7 @@ Cubren:
 
 ### Resultado actual
 
-- **73 pruebas unitarias** ejecutadas.
+- **79 pruebas unitarias** ejecutadas.
 - **0 fallos**.
 - **0 omitidas**.
 
@@ -54,11 +56,13 @@ Cubren:
 
 - navegación inferior entre Eventos y Ajustes, con Ajustes como pantalla inicial;
 - renderizado de una fila de evento con nombre de dispositivo y tipo;
+- renderizado del texto de un evento de automatización con modo y dispositivo;
 - persistencia de un evento Bluetooth ON a través de `EventProcessor` y Room.
 
 ### Resultado actual
 
-- **3 pruebas instrumentadas** ejecutadas en `Pixel_10_no_Google`.
+- **3 pruebas instrumentadas** ejecutadas previamente en `Pixel_10_no_Google`.
+- La nueva prueba instrumentada de eventos de automatización queda pendiente de ejecutar en dispositivo/emulador.
 - Android 17 / API 37.
 - **0 fallos**.
 

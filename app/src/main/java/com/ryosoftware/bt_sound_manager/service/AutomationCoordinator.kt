@@ -7,12 +7,14 @@ import com.ryosoftware.bt_sound_manager.core.util.normalizeAddress
 import com.ryosoftware.bt_sound_manager.domain.model.AutomationSettings
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothDeviceInfo
 import com.ryosoftware.bt_sound_manager.domain.repository.AutomationScheduler
+import com.ryosoftware.bt_sound_manager.domain.repository.BluetoothEventRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.BluetoothRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.InterruptModeRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.MonitorNotificationRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.RuntimeStateRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.SettingsRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.VolumeRepository
+import com.ryosoftware.bt_sound_manager.domain.usecase.AutomationEventFactory
 import com.ryosoftware.bt_sound_manager.domain.usecase.AutomationOutcome
 import com.ryosoftware.bt_sound_manager.domain.usecase.AutomationPlanner
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,6 +30,7 @@ class AutomationCoordinator @Inject constructor(
     @ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
     private val runtimeStateRepository: RuntimeStateRepository,
+    private val eventRepository: BluetoothEventRepository,
     private val bluetoothRepository: BluetoothRepository,
     private val interruptModeRepository: InterruptModeRepository,
     private val volumeRepository: VolumeRepository,
@@ -125,6 +128,14 @@ class AutomationCoordinator @Inject constructor(
                     runtimeStateRepository.saveAppliedMode(
                         mode = plan.desiredMode,
                         elapsedRealtimeTics = clock.elapsedRealtime(),
+                    )
+                    eventRepository.addEvent(
+                        AutomationEventFactory.create(
+                            nowUtcMillis = clock.nowMillis(),
+                            mode = plan.desiredMode,
+                            bluetoothEnabled = bluetoothEnabled,
+                            monitoredConnectedDevices = monitoredConnected,
+                        ),
                     )
                     showApplied(plan.desiredMode, monitoredConnected, bluetoothEnabled)
                 } else {

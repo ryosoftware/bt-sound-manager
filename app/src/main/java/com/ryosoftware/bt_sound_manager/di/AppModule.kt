@@ -5,6 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.ryosoftware.bt_sound_manager.core.time.AppClock
 import com.ryosoftware.bt_sound_manager.core.time.SystemAppClock
 import com.ryosoftware.bt_sound_manager.data.backup.BackupRepositoryImpl
@@ -44,6 +46,12 @@ private val Context.btSoundManagerDataStore: DataStore<Preferences> by preferenc
     name = "bt_sound_manager_settings",
 )
 
+private val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE bluetooth_events ADD COLUMN mode TEXT")
+    }
+}
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
@@ -55,7 +63,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "bt_sound_manager.db").build()
+        Room.databaseBuilder(context, AppDatabase::class.java, "bt_sound_manager.db")
+            .addMigrations(MIGRATION_1_2)
+            .build()
 
     @Provides
     fun provideBluetoothEventDao(database: AppDatabase): BluetoothEventDao =

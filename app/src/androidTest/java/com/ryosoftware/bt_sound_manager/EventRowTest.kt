@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEvent
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEventType
 import com.ryosoftware.bt_sound_manager.domain.model.AppearanceSettings
+import com.ryosoftware.bt_sound_manager.domain.model.InterruptMode
 import com.ryosoftware.bt_sound_manager.presentation.components.EventRow
 import com.ryosoftware.bt_sound_manager.presentation.theme.MonitorizeTheme
 import org.junit.Rule
@@ -37,5 +38,28 @@ class EventRowTest {
         composeRule.onNodeWithText("Headphones").assertIsDisplayed()
         composeRule.onNodeWithText("AA:BB").assertIsDisplayed()
         composeRule.onNodeWithText("Device connected").assertIsDisplayed()
+    }
+
+    @Test
+    fun rendersAutomationEventWithModeAndDevice() {
+        composeRule.setContent {
+            MonitorizeTheme(appearance = AppearanceSettings()) {
+                EventRow(
+                    event = BluetoothEvent(
+                        id = 1,
+                        timeUtc = 1_700_000_000_000,
+                        type = BluetoothEventType.AUTOMATION_APPLIED_CONNECTED,
+                        deviceName = "Headphones",
+                        mode = InterruptMode.DO_NOT_DISTURB,
+                    ),
+                    deviceName = null,
+                )
+            }
+        }
+        composeRule
+            .onNodeWithText(
+                "Mode \"Do Not Disturb\" is activated because \"Headphones\" is connected",
+            )
+            .assertIsDisplayed()
     }
 }

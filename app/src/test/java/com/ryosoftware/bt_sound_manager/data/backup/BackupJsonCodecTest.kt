@@ -37,6 +37,40 @@ class BackupJsonCodecTest {
         assertTrue(encoded.contains("\"type\": \"device_connected\""))
         assertTrue(encoded.contains("\"start\": \"06:00\""))
         assertTrue(encoded.contains("\"AA:BB:CC:DD:EE:FF\""))
+        assertTrue(decoded.events.all { it.mode == null })
+    }
+
+    @Test
+    fun roundTripKeepsAutomationEventMode() {
+        val event = BluetoothEvent(
+            timeUtc = Instant.parse("2026-11-19T18:40:03Z").toEpochMilli(),
+            type = BluetoothEventType.AUTOMATION_APPLIED_CONNECTED,
+            deviceName = "WH-1000XM5",
+            mode = InterruptMode.DO_NOT_DISTURB,
+        )
+        val contents = backupContents().copy(events = listOf(event))
+
+        val encoded = codec.encode(contents)
+        val decoded = codec.decode(encoded)
+
+        assertEquals(event, decoded.events.single())
+        assertTrue(encoded.contains("\"type\": \"automation_applied_connected\""))
+        assertTrue(encoded.contains("\"mode\": \"do-not-disturb\""))
+    }
+
+    @Test
+    fun rejectsInvalidEventModes() {
+        val event = BluetoothEvent(
+            timeUtc = Instant.parse("2026-11-19T18:40:03Z").toEpochMilli(),
+            type = BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES,
+            mode = InterruptMode.NORMAL,
+        )
+        val encoded = codec.encode(backupContents().copy(events = listOf(event)))
+            .replace("\"mode\": \"normal\"", "\"mode\": \"teleported\"")
+
+        assertThrows(BackupFormatException::class.java) {
+            codec.decode(encoded)
+        }
     }
 
     @Test

@@ -31,6 +31,12 @@
     <string name="event_bluetooth_off">Bluetooth desactivado</string>
     <string name="event_device_connected">Dispositivo conectado</string>
     <string name="event_device_disconnected">Dispositivo desconectado</string>
+    <string name="event_automation_applied_connected">Se activa el modo \"%1$s\" porque \"%2$s\" está conectado</string>
+    <string name="event_automation_applied_no_devices">Se activa el modo \"%1$s\" porque no hay dispositivos conectados</string>
+    <string name="event_automation_applied_bluetooth_off">Se activa el modo \"%1$s\" porque el Bluetooth está desactivado</string>
+    <string name="event_automation_connected">Automatización: dispositivo conectado</string>
+    <string name="event_automation_no_devices">Automatización: sin dispositivos</string>
+    <string name="event_automation_bluetooth_off">Automatización: Bluetooth apagado</string>
     <string name="no_events">Todavía no hay eventos</string>
     <string name="no_events_body">Los cambios de conexión Bluetooth aparecerán aquí.</string>
     <string name="delete">Eliminar</string>

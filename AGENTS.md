@@ -20,7 +20,7 @@ La app incluye:
 
 1. Monitorización global de dispositivos Bluetooth.
 2. Notificaciones de conexión y desconexión de cualquier dispositivo, y de Bluetooth encendido/apagado.
-3. Historial de eventos Bluetooth con agrupación por día.
+3. Historial de eventos Bluetooth y de cambios automáticos del modo de interrupción, con agrupación por día.
 4. Filtros de eventos por tipo y dispositivo.
 5. Borrado de eventos visibles, por día o completos.
 6. Nombre de dispositivo resuelto desde el nombre actual guardado, el nombre del evento o la dirección.
@@ -119,6 +119,7 @@ Tablas:
   - `event_type`
   - `device_address`
   - `device_name`
+  - `mode` (modo aplicado en eventos de automatización, nullable)
 - `device_names`
   - `address` (clave primaria)
   - `name`
@@ -153,7 +154,9 @@ Incluye:
 
 ### Eventos
 
-- Tipos: Bluetooth ON, Bluetooth OFF, dispositivo conectado, dispositivo desconectado.
+- Tipos: Bluetooth ON, Bluetooth OFF, dispositivo conectado, dispositivo desconectado y modo automático aplicado por dispositivo conectado, por ausencia de dispositivos o por Bluetooth apagado.
+- Los eventos de automatización guardan el modo aplicado y solo se registran cuando el modo cambia realmente.
+- En los eventos por dispositivo conectado se guarda el nombre del primer dispositivo monitorizado conectado.
 - Se conservan los eventos según la retención configurada, entre 3 y 90 días (7 por defecto).
 - La retención se calcula desde la medianoche local actual menos los días configurados.
 - Se eliminan pares de conexión/desconexión separados por menos de 1 segundo para la visualización.
@@ -172,6 +175,7 @@ Incluye:
 - Si el servicio no está activo, el receiver encola el cambio con WorkManager con un retraso mínimo de 3 segundos; puede ejecutarse algo después según el sistema.
 - Se descarta el evento si el estado del dispositivo cambió de nuevo.
 - Si el modo actual ya es el deseado, no se vuelve a aplicar.
+- Cada cambio real de modo se registra como evento de historial con su causa y el modo aplicado.
 - Si el usuario cambia manualmente el modo y `forceInterruptMode` está activo, se reaplica.
 - Antes de cambiar el modo se guarda el volumen multimedia; se restaura si la opción está activa.
 - La automatización se reevalúa en:

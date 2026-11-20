@@ -78,6 +78,7 @@ class BackupJsonCodec @Inject constructor() {
         type = type.toBackupValue(),
         deviceAddress = normalizeAddress(deviceAddress),
         deviceName = deviceName?.trim()?.takeIf { it.isNotEmpty() },
+        mode = mode?.storageValue,
     )
 
     private fun EventDto.toDomain(): BluetoothEvent {
@@ -91,6 +92,7 @@ class BackupJsonCodec @Inject constructor() {
             type = parsedType,
             deviceAddress = address,
             deviceName = deviceName?.trim()?.takeIf { it.isNotEmpty() },
+            mode = parseEventMode(mode),
         )
     }
 
@@ -198,7 +200,18 @@ class BackupJsonCodec @Inject constructor() {
         "bluetooth_off" -> BluetoothEventType.BLUETOOTH_OFF
         "device_connected" -> BluetoothEventType.DEVICE_CONNECTED
         "device_disconnected" -> BluetoothEventType.DEVICE_DISCONNECTED
+        "automation_applied_connected" -> BluetoothEventType.AUTOMATION_APPLIED_CONNECTED
+        "automation_applied_no_devices" -> BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES
+        "automation_applied_bluetooth_off" ->
+            BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF
+
         else -> throw BackupFormatException("Invalid event type: $value")
+    }
+
+    private fun parseEventMode(value: String?): InterruptMode? {
+        if (value == null) return null
+        return InterruptMode.fromStorage(value)
+            ?: throw BackupFormatException("Invalid event mode: $value")
     }
 
     private fun BluetoothEventType.toBackupValue(): String = when (this) {
@@ -206,6 +219,10 @@ class BackupJsonCodec @Inject constructor() {
         BluetoothEventType.BLUETOOTH_OFF -> "bluetooth_off"
         BluetoothEventType.DEVICE_CONNECTED -> "device_connected"
         BluetoothEventType.DEVICE_DISCONNECTED -> "device_disconnected"
+        BluetoothEventType.AUTOMATION_APPLIED_CONNECTED -> "automation_applied_connected"
+        BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES -> "automation_applied_no_devices"
+        BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF ->
+            "automation_applied_bluetooth_off"
     }
 }
 
@@ -225,6 +242,7 @@ internal data class EventDto(
     val type: String,
     val deviceAddress: String? = null,
     val deviceName: String? = null,
+    val mode: String? = null,
 )
 
 @Serializable

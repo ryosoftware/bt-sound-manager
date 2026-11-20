@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Bluetooth
-import androidx.compose.material.icons.outlined.BluetoothDisabled
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -58,10 +55,38 @@ fun EventRow(
     val contentColor = eventContentColor(event.type)
     val eventLabel = stringResource(eventTypeLabelRes(event.type))
     val address = event.deviceAddress?.takeIf { it.isNotBlank() }
-    val title = if (event.type.isDeviceEvent) {
-        deviceName?.takeIf { it.isNotBlank() } ?: address.orEmpty()
-    } else {
-        eventLabel
+    val modeName = event.mode?.let { modeLabel(context, it) }
+    val title = when (event.type) {
+        BluetoothEventType.DEVICE_CONNECTED,
+        BluetoothEventType.DEVICE_DISCONNECTED,
+        -> deviceName?.takeIf { it.isNotBlank() } ?: address.orEmpty()
+
+        BluetoothEventType.AUTOMATION_APPLIED_CONNECTED -> {
+            val connectedName = event.deviceName?.takeIf { it.isNotBlank() }
+            if (modeName != null && connectedName != null) {
+                context.getString(
+                    R.string.event_automation_applied_connected,
+                    modeName,
+                    connectedName,
+                )
+            } else {
+                eventLabel
+            }
+        }
+
+        BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES ->
+            modeName?.let {
+                context.getString(R.string.event_automation_applied_no_devices, it)
+            } ?: eventLabel
+
+        BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF ->
+            modeName?.let {
+                context.getString(R.string.event_automation_applied_bluetooth_off, it)
+            } ?: eventLabel
+
+        BluetoothEventType.BLUETOOTH_ON,
+        BluetoothEventType.BLUETOOTH_OFF,
+        -> eventLabel
     }
     val supportingLines = if (event.type.isDeviceEvent) {
         buildList {
@@ -103,6 +128,10 @@ fun EventRow(
                         BluetoothEventType.DEVICE_DISCONNECTED -> painterResource(R.drawable.ic_bluetooth_device_disconnected)
                         BluetoothEventType.BLUETOOTH_ON -> painterResource(R.drawable.ic_bluetooth_on)
                         BluetoothEventType.BLUETOOTH_OFF -> painterResource(R.drawable.ic_bluetooth_off)
+                        BluetoothEventType.AUTOMATION_APPLIED_CONNECTED,
+                        BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES,
+                        BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF,
+                        -> painterResource(automationModeIconRes(event.mode))
                     }
                     Icon(
                         painter = eventIconPainter,
@@ -144,6 +173,11 @@ private fun eventContainerColor(type: BluetoothEventType): Color {
 
         BluetoothEventType.DEVICE_DISCONNECTED ->
             if (dark) EventDarkDeviceDisconnectedContainer else EventDeviceDisconnectedContainer
+
+        BluetoothEventType.AUTOMATION_APPLIED_CONNECTED,
+        BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES,
+        BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF,
+        -> MaterialTheme.colorScheme.tertiaryContainer
     }
 }
 
@@ -160,5 +194,10 @@ private fun eventContentColor(type: BluetoothEventType): Color {
 
         BluetoothEventType.DEVICE_DISCONNECTED ->
             if (dark) EventDarkDeviceDisconnectedContent else EventDeviceDisconnectedContent
+
+        BluetoothEventType.AUTOMATION_APPLIED_CONNECTED,
+        BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES,
+        BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF,
+        -> MaterialTheme.colorScheme.onTertiaryContainer
     }
 }

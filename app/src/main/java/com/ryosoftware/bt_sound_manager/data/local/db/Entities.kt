@@ -21,6 +21,8 @@ data class BluetoothEventEntity(
     val deviceAddress: String?,
     @ColumnInfo(name = "device_name")
     val deviceName: String?,
+    @ColumnInfo(name = "mode")
+    val mode: String?,
 )
 
 @Entity(tableName = "device_names")

@@ -26,6 +26,8 @@ Cubren:
 - planificación de la automatización;
 - creación de eventos de automatización con causa, modo y primer dispositivo conectado;
 - creación de eventos de cambio externo de modo;
+- evento de automatización pendiente hasta confirmar el modo, con caducidad;
+- descarte del evento pendiente cuando ocurre un cambio externo;
 - detección de cambios propios y externos con supresión de broadcasts repetidos;
 - `forceMode` corrige un modo externo inesperado en la siguiente reevaluación;
 - mapeo de iconos de los modos aplicados;
@@ -51,7 +53,7 @@ Cubren:
 
 ### Resultado actual
 
-- **106 pruebas unitarias** ejecutadas.
+- **112 pruebas unitarias** ejecutadas.
 - **0 fallos**.
 - **0 omitidas**.
 

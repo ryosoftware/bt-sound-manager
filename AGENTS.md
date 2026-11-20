@@ -158,6 +158,8 @@ Incluye:
 
 - Tipos: Bluetooth ON, Bluetooth OFF, dispositivo conectado, dispositivo desconectado, modo automático aplicado por dispositivo conectado, por ausencia de dispositivos o por Bluetooth apagado, y cambio externo del modo de sonido.
 - Los eventos de automatización guardan el modo aplicado y solo se registran cuando el modo cambia realmente.
+- El evento de automatización se guarda después de confirmar que el modo actual coincide con el deseado; si no se confirma en 5 segundos, se descarta.
+- Los eventos de cambio externo se registran al recibir el broadcast del filtro de interrupción, cuando ya se puede leer el modo nuevo.
 - Los cambios externos guardan el modo nuevo; Android no permite saber qué app realizó el cambio, solo que no fue la app.
 - En los eventos por dispositivo conectado se guarda el nombre del primer dispositivo monitorizado conectado.
 - Se detectan cambios externos con la automatización activa y dispositivos configurados, también fuera del horario.
@@ -179,7 +181,7 @@ Incluye:
 - Si el servicio no está activo, el receiver encola el cambio con WorkManager con un retraso mínimo de 3 segundos; puede ejecutarse algo después según el sistema.
 - Se descarta el evento si el estado del dispositivo cambió de nuevo.
 - Si el modo actual ya es el deseado, no se vuelve a aplicar.
-- Cada cambio real de modo se registra como evento de historial con su causa y el modo aplicado.
+- Cada cambio real de modo se registra como evento de historial con su causa y el modo aplicado, una vez confirmado.
 - Si el usuario u otra app cambia el modo, se registra y se notifica; no se reaplica inmediatamente.
 - Con `forceInterruptMode` activo, el modo deseado se fuerza en la siguiente reevaluación por Bluetooth, dispositivos, horario, arranque, inicio de la app o cambio de usuario.
 - Antes de cambiar el modo se guarda el volumen multimedia; se restaura si la opción está activa.

@@ -38,6 +38,7 @@ class AutomationCoordinator @Inject constructor(
     private val notificationRepository: MonitorNotificationRepository,
     private val statusHolder: AutomationStatusHolder,
     private val modeChangeTracker: InterruptModeChangeTracker,
+    private val pendingAutomationEvents: PendingAutomationEventHolder,
     private val scheduler: AutomationScheduler,
     private val clock: AppClock,
 ) {
@@ -58,6 +59,14 @@ class AutomationCoordinator @Inject constructor(
     ) {
         val settings = settingsRepository.snapshot()
         val automation = settings.automation
+        val currentMode = interruptModeRepository.currentMode()
+        if (currentMode == null) {
+            pendingAutomationEvents.clearExpired()
+        } else {
+            pendingAutomationEvents.takeConfirmed(currentMode)?.let { event ->
+                eventRepository.addEvent(event.copy(timeUtc = clock.nowMillis()))
+            }
+        }
         if (!automation.enabled && !doNotCheckEnabled) {
             statusHolder.update(null)
             scheduler.cancel()
@@ -81,7 +90,7 @@ class AutomationCoordinator @Inject constructor(
             settings = automation,
             minuteOfDay = minuteOfDay,
             connectedMonitoredDevices = monitoredConnected.size,
-            currentMode = interruptModeRepository.currentMode(),
+            currentMode = currentMode,
             lastAppliedMode = runtime.lastAppliedMode,
             canAccessPolicy = interruptModeRepository.canAccessPolicy(),
             doNotCheckEnabled = doNotCheckEnabled,
@@ -135,17 +144,18 @@ class AutomationCoordinator @Inject constructor(
                 modeChangeTracker.markExpected(plan.desiredMode)
                 if (interruptModeRepository.setMode(plan.desiredMode)) {
                     modeChangeTracker.markApplied(plan.desiredMode)
-                    runtimeStateRepository.saveAppliedMode(
-                        mode = plan.desiredMode,
-                        elapsedRealtimeTics = clock.elapsedRealtime(),
-                    )
-                    eventRepository.addEvent(
-                        AutomationEventFactory.create(
+                    pendingAutomationEvents.set(
+                        event = AutomationEventFactory.create(
                             nowUtcMillis = clock.nowMillis(),
                             mode = plan.desiredMode,
                             bluetoothEnabled = bluetoothEnabled,
                             monitoredConnectedDevices = monitoredConnected,
                         ),
+                        desiredMode = plan.desiredMode,
+                    )
+                    runtimeStateRepository.saveAppliedMode(
+                        mode = plan.desiredMode,
+                        elapsedRealtimeTics = clock.elapsedRealtime(),
                     )
                     showApplied(plan.desiredMode, monitoredConnected, bluetoothEnabled)
                 } else {
@@ -206,7 +216,17 @@ class AutomationCoordinator @Inject constructor(
         val settings = settingsRepository.snapshot()
         val runtime = runtimeStateRepository.snapshot()
         val currentMode = interruptModeRepository.currentMode() ?: return
-        if (!modeChangeTracker.isExternalChange(currentMode, runtime.lastAppliedMode)) return
+        val isExternalChange = modeChangeTracker.isExternalChange(
+            currentMode = currentMode,
+            baselineMode = runtime.lastAppliedMode,
+        )
+        pendingAutomationEvents.takeConfirmed(currentMode)?.let { event ->
+            eventRepository.addEvent(event.copy(timeUtc = clock.nowMillis()))
+            return
+        }
+        pendingAutomationEvents.clearExpired()
+        if (!isExternalChange) return
+        pendingAutomationEvents.clear()
 
         if (settings.automation.restoreMediaVolume) {
             val previousVolume = runtime.previousMediaVolume

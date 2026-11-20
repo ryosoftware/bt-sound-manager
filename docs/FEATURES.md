@@ -91,6 +91,7 @@ Reglas:
 - se descarta el evento si el estado del dispositivo vuelve a cambiar;
 - si el modo actual ya es el deseado, no se vuelve a aplicar;
 - cada cambio real del modo se registra en el historial con la causa, el modo aplicado y el primer dispositivo monitorizado conectado cuando corresponde;
+- el evento de automatización se guarda solo después de confirmar que el modo actual coincide con el deseado; si no se confirma en 5 segundos, se descarta;
 - los cambios externos se registran y notifican sin reaplicar de inmediato; no es posible saber qué app los realizó;
 - con “forzar” activo, el modo deseado se aplica en la siguiente reevaluación por Bluetooth, dispositivos, horario, arranque, inicio de la app o cambio de usuario;
 - se guarda el volumen multimedia antes de cambiar el modo y se restaura si la opción está activa;

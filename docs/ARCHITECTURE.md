@@ -98,7 +98,7 @@ AutomationCoordinator.apply()
         ├── AutomationPlanner.plan()
         ├── InterruptModeRepository.setMode()
         ├── RuntimeStateRepository.saveAppliedMode()
-        ├── BluetoothEventRepository.addEvent() (solo cambios reales)
+        ├── PendingAutomationEventHolder.set()
         ├── AutomationScheduleStatusResolver.resolve()
         ├── AutomationStatusHolder.update()
         ├── MonitorNotificationRepository.showAutomationNotification()
@@ -106,6 +106,8 @@ AutomationCoordinator.apply()
 ```
 
 `AutomationPlanner` es una regla pura y testeable. El coordinador se encarga de los efectos del sistema. `AutomationScheduleStatusResolver` calcula si la automatización está todo el día, dentro o fuera del horario, y `AutomationStatusHolder` comparte ese estado con el servicio en primer plano para actualizar su notificación.
+
+`PendingAutomationEventHolder` guarda el evento de automatización hasta que el sistema confirma el cambio. El coordinador lo inserta cuando `currentInterruptionFilter` coincide con el modo deseado, bien al recibir `ACTION_INTERRUPTION_FILTER_CHANGED` o al reconciliar en la siguiente evaluación. Si no hay confirmación en 5 segundos, el evento se descarta. Los cambios externos se registran directamente desde el broadcast, cuando ya se ha leído el modo nuevo.
 
 `InterruptModeChangeTracker` distingue los cambios propios de los externos. El coordinador marca el modo esperado antes de llamar a `setMode()`; cuando llega `ACTION_INTERRUPTION_FILTER_CHANGED`, el tracker ignora el cambio propio dentro de una ventana de supresión y los broadcasts repetidos. Un cambio distinto se registra como `EXTERNAL_MODE_CHANGED` y actualiza la notificación de automatización. Android no expone la app de origen, así que el texto indica “usuario u otra app”. Con `forceMode` activo no se reaplica en ese broadcast: `AutomationPlanner` fuerza el modo deseado en la siguiente reevaluación por Bluetooth, dispositivos, horario, arranque, inicio de la app o cambio de usuario.
 

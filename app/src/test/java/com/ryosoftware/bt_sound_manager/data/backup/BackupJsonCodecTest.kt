@@ -59,6 +59,23 @@ class BackupJsonCodecTest {
     }
 
     @Test
+    fun roundTripKeepsExternalModeChange() {
+        val event = BluetoothEvent(
+            timeUtc = Instant.parse("2026-11-19T18:40:03Z").toEpochMilli(),
+            type = BluetoothEventType.EXTERNAL_MODE_CHANGED,
+            mode = InterruptMode.ALARMS_ONLY,
+        )
+        val contents = backupContents().copy(events = listOf(event))
+
+        val encoded = codec.encode(contents)
+        val decoded = codec.decode(encoded)
+
+        assertEquals(event, decoded.events.single())
+        assertTrue(encoded.contains("\"type\": \"external_mode_changed\""))
+        assertTrue(encoded.contains("\"mode\": \"alarms-only\""))
+    }
+
+    @Test
     fun rejectsInvalidEventModes() {
         val event = BluetoothEvent(
             timeUtc = Instant.parse("2026-11-19T18:40:03Z").toEpochMilli(),

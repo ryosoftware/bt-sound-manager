@@ -205,6 +205,7 @@ class BackupJsonCodec @Inject constructor() {
         "automation_applied_bluetooth_off" ->
             BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF
 
+        "external_mode_changed" -> BluetoothEventType.EXTERNAL_MODE_CHANGED
         else -> throw BackupFormatException("Invalid event type: $value")
     }
 
@@ -223,6 +224,8 @@ class BackupJsonCodec @Inject constructor() {
         BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES -> "automation_applied_no_devices"
         BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF ->
             "automation_applied_bluetooth_off"
+
+        BluetoothEventType.EXTERNAL_MODE_CHANGED -> "external_mode_changed"
     }
 }
 

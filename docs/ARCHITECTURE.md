@@ -107,6 +107,8 @@ AutomationCoordinator.apply()
 
 `AutomationPlanner` es una regla pura y testeable. El coordinador se encarga de los efectos del sistema. `AutomationScheduleStatusResolver` calcula si la automatización está todo el día, dentro o fuera del horario, y `AutomationStatusHolder` comparte ese estado con el servicio en primer plano para actualizar su notificación.
 
+`InterruptModeChangeTracker` distingue los cambios propios de los externos. El coordinador marca el modo esperado antes de llamar a `setMode()`; cuando llega `ACTION_INTERRUPTION_FILTER_CHANGED`, el tracker ignora el cambio propio dentro de una ventana de supresión y los broadcasts repetidos. Un cambio distinto se registra como `EXTERNAL_MODE_CHANGED` y actualiza la notificación de automatización. Android no expone la app de origen, así que el texto indica “usuario u otra app”. Con `forceMode` activo no se reaplica en ese broadcast: `AutomationPlanner` fuerza el modo deseado en la siguiente reevaluación por Bluetooth, dispositivos, horario, arranque, inicio de la app o cambio de usuario.
+
 Cuando el servicio está activo, `AutomationCoordinator.applyDelayed()` mantiene el retraso de 3 segundos en el scope del servicio. Si el servicio no está activo y el evento lo procesa `SystemEventReceiver`, el trabajo de automatización no se espera dentro de `goAsync()`:
 
 ```text
@@ -120,7 +122,7 @@ SystemEventReceiver → MonitorBroadcastHandler (DEFERRED)
 
 Así el receiver termina en pocos cientos de milisegundos y el sistema puede ejecutar el cambio algo después de los 3 segundos.
 
-La reevaluación se dispara en arranque, actualización de la app, inicio de la app, cambio de usuario, cambio de filtro de interrupción, alarmas de inicio y fin de horario y conexión/desconexión. `AutomationCoordinator.apply()` se ejecuta en `Dispatchers.Default`, por lo que nunca bloquea el hilo principal. Nunca activa Bluetooth: si está apagado se evalúa como si no hubiera dispositivos conectados.
+La reevaluación se dispara en arranque, actualización de la app, inicio de la app, cambio de usuario, alarmas de inicio y fin de horario y conexión/desconexión. `AutomationCoordinator.apply()` se ejecuta en `Dispatchers.Default`, por lo que nunca bloquea el hilo principal. Nunca activa Bluetooth: si está apagado se evalúa como si no hubiera dispositivos conectados.
 
 ### Copia de seguridad y restauración
 
@@ -197,7 +199,7 @@ Archivo `bt_sound_manager_settings`:
 - automatización;
 - servicio en segundo plano.
 
-Las notificaciones de dispositivo se emiten para cualquier dispositivo, sin filtro por selección. Bluetooth encendido y apagado también generan notificación; la de apagado incluye una acción para abrir el diálogo del sistema. Las notificaciones de dispositivo abren el historial. La notificación de automatización incluye acciones para desactivar la automatización, activar Bluetooth y, cuando faltan permisos, abrir los ajustes de acceso a No molestar. La notificación del servicio en segundo plano muestra si la automatización está todo el día, dentro del horario o fuera del horario, y se actualiza al cruzar los límites del horario.
+Las notificaciones de dispositivo se emiten para cualquier dispositivo, sin filtro por selección. Bluetooth encendido y apagado también generan notificación; la de apagado incluye una acción para abrir el diálogo del sistema. Las notificaciones de dispositivo abren el historial. La notificación de automatización incluye acciones para desactivar la automatización, activar Bluetooth y, cuando faltan permisos, abrir los ajustes de acceso a No molestar; también informa de los cambios externos del modo de sonido. La notificación del servicio en segundo plano muestra si la automatización está todo el día, dentro del horario o fuera del horario, y se actualiza al cruzar los límites del horario.
 
 `AndroidInterruptModeRepository` mapea los modos de la app a los filtros de Android y comprueba el acceso a la política de notificaciones.
 

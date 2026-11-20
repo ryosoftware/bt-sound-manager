@@ -7,6 +7,15 @@ import com.ryosoftware.bt_sound_manager.domain.model.InterruptMode
 
 object AutomationEventFactory {
 
+    fun createExternalChange(
+        nowUtcMillis: Long,
+        mode: InterruptMode,
+    ): BluetoothEvent = BluetoothEvent(
+        timeUtc = nowUtcMillis,
+        type = BluetoothEventType.EXTERNAL_MODE_CHANGED,
+        mode = mode,
+    )
+
     fun create(
         nowUtcMillis: Long,
         mode: InterruptMode,

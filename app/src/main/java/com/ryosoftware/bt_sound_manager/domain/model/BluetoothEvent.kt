@@ -8,6 +8,7 @@ enum class BluetoothEventType(val code: Int) {
     AUTOMATION_APPLIED_CONNECTED(5),
     AUTOMATION_APPLIED_NO_DEVICES(6),
     AUTOMATION_APPLIED_BLUETOOTH_OFF(7),
+    EXTERNAL_MODE_CHANGED(8),
     ;
 
     val isDeviceEvent: Boolean

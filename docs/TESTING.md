@@ -25,6 +25,9 @@ Cubren:
 
 - planificación de la automatización;
 - creación de eventos de automatización con causa, modo y primer dispositivo conectado;
+- creación de eventos de cambio externo de modo;
+- detección de cambios propios y externos con supresión de broadcasts repetidos;
+- `forceMode` corrige un modo externo inesperado en la siguiente reevaluación;
 - mapeo de iconos de los modos aplicados;
 - ventana horaria, incluida la franja que cruza medianoche;
 - cálculo del siguiente inicio, siguiente fin y siguiente transición del horario;
@@ -39,7 +42,7 @@ Cubren:
 - despacho del worker de automatización a las operaciones del coordinador;
 - filtrado y borrado en `EventsViewModel`;
 - reevaluación de la automatización al iniciar la app en `MainViewModel`;
-- codificación y decodificación del JSON de copia de seguridad, incluido el modo de los eventos de automatización;
+- codificación y decodificación del JSON de copia de seguridad, incluido el modo de los eventos de automatización y de cambio externo;
 - restauración selectiva de eventos y ajustes;
 - aplicación de la retención después de restaurar;
 - limpieza de la tabla al restaurar una copia sin eventos;
@@ -48,7 +51,7 @@ Cubren:
 
 ### Resultado actual
 
-- **95 pruebas unitarias** ejecutadas.
+- **106 pruebas unitarias** ejecutadas.
 - **0 fallos**.
 - **0 omitidas**.
 
@@ -59,6 +62,7 @@ Cubren:
 - navegación inferior entre Eventos y Ajustes, con Ajustes como pantalla inicial;
 - renderizado de una fila de evento con nombre de dispositivo y tipo;
 - renderizado del texto de un evento de automatización con modo y dispositivo;
+- renderizado de un evento de cambio externo de modo;
 - persistencia de un evento Bluetooth ON a través de `EventProcessor` y Room.
 
 ### Resultado actual

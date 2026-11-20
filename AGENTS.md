@@ -152,12 +152,15 @@ Incluye:
 - Al encenderse Bluetooth se muestra una notificación informativa.
 - Al apagarse Bluetooth se oculta la notificación de conexión y se muestra una notificación accionable para activarlo.
 - La notificación del servicio en segundo plano indica si la automatización está todo el día, dentro del horario o fuera del horario.
+- Un cambio externo del modo de sonido actualiza la notificación de automatización indicando que lo cambió el usuario u otra app.
 
 ### Eventos
 
-- Tipos: Bluetooth ON, Bluetooth OFF, dispositivo conectado, dispositivo desconectado y modo automático aplicado por dispositivo conectado, por ausencia de dispositivos o por Bluetooth apagado.
+- Tipos: Bluetooth ON, Bluetooth OFF, dispositivo conectado, dispositivo desconectado, modo automático aplicado por dispositivo conectado, por ausencia de dispositivos o por Bluetooth apagado, y cambio externo del modo de sonido.
 - Los eventos de automatización guardan el modo aplicado y solo se registran cuando el modo cambia realmente.
+- Los cambios externos guardan el modo nuevo; Android no permite saber qué app realizó el cambio, solo que no fue la app.
 - En los eventos por dispositivo conectado se guarda el nombre del primer dispositivo monitorizado conectado.
+- Se detectan cambios externos con la automatización activa y dispositivos configurados, también fuera del horario.
 - Se conservan los eventos según la retención configurada, entre 3 y 90 días (7 por defecto).
 - La retención se calcula desde la medianoche local actual menos los días configurados.
 - Se eliminan pares de conexión/desconexión separados por menos de 1 segundo para la visualización.
@@ -177,17 +180,18 @@ Incluye:
 - Se descarta el evento si el estado del dispositivo cambió de nuevo.
 - Si el modo actual ya es el deseado, no se vuelve a aplicar.
 - Cada cambio real de modo se registra como evento de historial con su causa y el modo aplicado.
-- Si el usuario cambia manualmente el modo y `forceInterruptMode` está activo, se reaplica.
+- Si el usuario u otra app cambia el modo, se registra y se notifica; no se reaplica inmediatamente.
+- Con `forceInterruptMode` activo, el modo deseado se fuerza en la siguiente reevaluación por Bluetooth, dispositivos, horario, arranque, inicio de la app o cambio de usuario.
 - Antes de cambiar el modo se guarda el volumen multimedia; se restaura si la opción está activa.
 - La automatización se reevalúa en:
   - arranque del dispositivo, con un retraso de 15 segundos
   - actualización de la app
   - inicio de la app
   - cambio de usuario
-  - cambio del filtro de interrupción
   - alarmas de inicio y fin de horario
   - conexión/desconexión de dispositivos
 - Al reevaluar nunca se activa Bluetooth: si está apagado se aplica el modo configurado para “sin dispositivos conectados”.
+- Un cambio del filtro de interrupción se usa para detectar cambios externos, pero no reaplica el modo inmediatamente.
 - La reevaluación se ejecuta siempre en segundo plano.
 
 ### Modos de interrupción

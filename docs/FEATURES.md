@@ -36,6 +36,7 @@ Comportamiento:
 - al apagarse Bluetooth se oculta la de conexión y se muestra una notificación con acción para activarlo;
 - las notificaciones de dispositivo abren el historial;
 - la notificación de automatización permite desactivarla, activar Bluetooth o abrir el acceso a No molestar;
+- cuando el usuario u otra app cambia el modo de sonido, se registra un cambio externo y la notificación de automatización lo indica;
 - al entrar y salir del horario de automatización se actualizan la notificación de automatización y la del servicio en segundo plano.
 
 ## 4. Historial de eventos
@@ -48,7 +49,8 @@ Tipos de evento:
 - dispositivo desconectado;
 - modo automático aplicado por dispositivo monitorizado conectado;
 - modo automático aplicado por ausencia de dispositivos conectados;
-- modo automático aplicado por Bluetooth desactivado.
+- modo automático aplicado por Bluetooth desactivado;
+- modo de sonido cambiado externamente por el usuario u otra app.
 
 Funciones:
 
@@ -70,7 +72,7 @@ Configuración:
 - todos los dispositivos Bluetooth o una selección;
 - modo cuando hay al menos un dispositivo configurado conectado;
 - modo cuando no hay dispositivos conectados;
-- forzar el modo si se cambia manualmente;
+- forzar el modo si se cambia manualmente o por otra app, en la siguiente reevaluación;
 - restaurar el volumen multimedia tras el cambio.
 
 Modos:
@@ -89,9 +91,10 @@ Reglas:
 - se descarta el evento si el estado del dispositivo vuelve a cambiar;
 - si el modo actual ya es el deseado, no se vuelve a aplicar;
 - cada cambio real del modo se registra en el historial con la causa, el modo aplicado y el primer dispositivo monitorizado conectado cuando corresponde;
-- si el usuario cambia manualmente el modo y “forzar” está activo, se reaplica;
+- los cambios externos se registran y notifican sin reaplicar de inmediato; no es posible saber qué app los realizó;
+- con “forzar” activo, el modo deseado se aplica en la siguiente reevaluación por Bluetooth, dispositivos, horario, arranque, inicio de la app o cambio de usuario;
 - se guarda el volumen multimedia antes de cambiar el modo y se restaura si la opción está activa;
-- se reevalúa en arranque (con 15 segundos de retraso), actualización de la app, inicio de la app, cambio de usuario, cambio de filtro de interrupción, alarmas de inicio y fin del horario y eventos de conexión/desconexión;
+- se reevalúa en arranque (con 15 segundos de retraso), actualización de la app, inicio de la app, cambio de usuario, alarmas de inicio y fin del horario y eventos de conexión/desconexión;
 - al reevaluar nunca se activa Bluetooth: si está apagado se aplica el modo configurado para “sin dispositivos conectados”.
 
 ## 6. Servicio de segundo plano

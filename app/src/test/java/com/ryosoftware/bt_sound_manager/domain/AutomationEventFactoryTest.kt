@@ -44,6 +44,20 @@ class AutomationEventFactoryTest {
     }
 
     @Test
+    fun createsExternalModeChangeEvent() {
+        val event = AutomationEventFactory.createExternalChange(
+            nowUtcMillis = 2_000,
+            mode = InterruptMode.ALARMS_ONLY,
+        )
+
+        assertEquals(BluetoothEventType.EXTERNAL_MODE_CHANGED, event.type)
+        assertNull(event.deviceName)
+        assertNull(event.deviceAddress)
+        assertEquals(InterruptMode.ALARMS_ONLY, event.mode)
+        assertEquals(2_000, event.timeUtc)
+    }
+
+    @Test
     fun createsBluetoothOffEvent() {
         val event = AutomationEventFactory.create(
             nowUtcMillis = 1_000,

@@ -37,6 +37,7 @@ class AutomationCoordinator @Inject constructor(
     private val volumeRepository: VolumeRepository,
     private val notificationRepository: MonitorNotificationRepository,
     private val statusHolder: AutomationStatusHolder,
+    private val modeChangeTracker: InterruptModeChangeTracker,
     private val scheduler: AutomationScheduler,
     private val clock: AppClock,
 ) {
@@ -85,6 +86,7 @@ class AutomationCoordinator @Inject constructor(
             canAccessPolicy = interruptModeRepository.canAccessPolicy(),
             doNotCheckEnabled = doNotCheckEnabled,
             forceNotification = forceNotification,
+            forceMode = automation.forceMode,
         )
 
         when (plan.outcome) {
@@ -130,7 +132,9 @@ class AutomationCoordinator @Inject constructor(
                 if (previousVolume >= 0) {
                     runtimeStateRepository.savePreviousMediaVolume(previousVolume)
                 }
+                modeChangeTracker.markExpected(plan.desiredMode)
                 if (interruptModeRepository.setMode(plan.desiredMode)) {
+                    modeChangeTracker.markApplied(plan.desiredMode)
                     runtimeStateRepository.saveAppliedMode(
                         mode = plan.desiredMode,
                         elapsedRealtimeTics = clock.elapsedRealtime(),
@@ -145,6 +149,7 @@ class AutomationCoordinator @Inject constructor(
                     )
                     showApplied(plan.desiredMode, monitoredConnected, bluetoothEnabled)
                 } else {
+                    modeChangeTracker.cancelExpected()
                     notificationRepository.showAutomationNotification(
                         mode = null,
                         body = context.getString(R.string.notification_automation_no_permissions),
@@ -200,6 +205,9 @@ class AutomationCoordinator @Inject constructor(
     suspend fun onInterruptModeChanged() {
         val settings = settingsRepository.snapshot()
         val runtime = runtimeStateRepository.snapshot()
+        val currentMode = interruptModeRepository.currentMode() ?: return
+        if (!modeChangeTracker.isExternalChange(currentMode, runtime.lastAppliedMode)) return
+
         if (settings.automation.restoreMediaVolume) {
             val previousVolume = runtime.previousMediaVolume
             if (previousVolume != null &&
@@ -209,9 +217,21 @@ class AutomationCoordinator @Inject constructor(
                 volumeRepository.setMediaVolume(previousVolume)
             }
         }
-        if (settings.automation.enabled && settings.automation.forceMode) {
-            apply(forceNotification = true)
-        }
+
+        if (!settings.automation.enabled || !settings.automation.hasDeviceConfiguration) return
+
+        eventRepository.addEvent(
+            AutomationEventFactory.createExternalChange(
+                nowUtcMillis = clock.nowMillis(),
+                mode = currentMode,
+            ),
+        )
+        notificationRepository.showAutomationNotification(
+            mode = currentMode,
+            body = context.getString(R.string.notification_automation_external_change),
+            showToggleAutomationAction = true,
+            showEnableBluetoothAction = !bluetoothRepository.isEnabled(),
+        )
     }
 
     suspend fun toggleAutomation() {

@@ -130,6 +130,36 @@ class AutomationPlannerTest {
     }
 
     @Test
+    fun forceModeOverwritesUnexpectedCurrentMode() {
+        val result = planner.plan(
+            settings = settings(),
+            minuteOfDay = 600,
+            connectedMonitoredDevices = 1,
+            currentMode = InterruptMode.SILENT_ALL,
+            lastAppliedMode = InterruptMode.NORMAL,
+            canAccessPolicy = true,
+            forceMode = true,
+        )
+        assertEquals(AutomationOutcome.APPLIED, result.outcome)
+        assertTrue(result.shouldChange)
+    }
+
+    @Test
+    fun unexpectedCurrentModeIsKeptWithoutForceMode() {
+        val result = planner.plan(
+            settings = settings(),
+            minuteOfDay = 600,
+            connectedMonitoredDevices = 1,
+            currentMode = InterruptMode.SILENT_ALL,
+            lastAppliedMode = InterruptMode.NORMAL,
+            canAccessPolicy = true,
+            forceMode = false,
+        )
+        assertEquals(AutomationOutcome.WRONG_CURRENT_PROFILE, result.outcome)
+        assertFalse(result.shouldChange)
+    }
+
+    @Test
     fun forceNotificationReappliesMode() {
         val result = planner.plan(
             settings = settings(),

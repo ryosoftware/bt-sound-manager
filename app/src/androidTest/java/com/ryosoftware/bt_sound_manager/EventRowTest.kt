@@ -41,6 +41,26 @@ class EventRowTest {
     }
 
     @Test
+    fun rendersExternalModeChange() {
+        composeRule.setContent {
+            MonitorizeTheme(appearance = AppearanceSettings()) {
+                EventRow(
+                    event = BluetoothEvent(
+                        id = 1,
+                        timeUtc = 1_700_000_000_000,
+                        type = BluetoothEventType.EXTERNAL_MODE_CHANGED,
+                        mode = InterruptMode.ALARMS_ONLY,
+                    ),
+                    deviceName = null,
+                )
+            }
+        }
+        composeRule
+            .onNodeWithText("Sound mode changed externally: \"Alarms only\"")
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun rendersAutomationEventWithModeAndDevice() {
         composeRule.setContent {
             MonitorizeTheme(appearance = AppearanceSettings()) {

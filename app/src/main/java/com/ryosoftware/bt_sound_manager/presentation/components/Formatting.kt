@@ -68,6 +68,7 @@ fun eventTypeLabelRes(type: BluetoothEventType): Int = when (type) {
     BluetoothEventType.AUTOMATION_APPLIED_CONNECTED -> R.string.event_automation_connected
     BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES -> R.string.event_automation_no_devices
     BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF -> R.string.event_automation_bluetooth_off
+    BluetoothEventType.EXTERNAL_MODE_CHANGED -> R.string.event_external_mode_changed_short
 }
 
 @DrawableRes

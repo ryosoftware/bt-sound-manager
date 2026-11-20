@@ -31,6 +31,7 @@ class AutomationPlanner {
         canAccessPolicy: Boolean,
         doNotCheckEnabled: Boolean = false,
         forceNotification: Boolean = false,
+        forceMode: Boolean = false,
     ): AutomationPlan {
         if (!settings.enabled && !doNotCheckEnabled) {
             return AutomationPlan(
@@ -82,11 +83,12 @@ class AutomationPlanner {
         val lastOrEmpty = setOfNotNull(lastAppliedMode)
         val forceChange = forceNotification &&
             (currentMode in modes || currentMode in lastOrEmpty)
+        val forceModeChange = forceMode && currentMode != desiredMode
         val changeToNone = desiredMode == settings.modeWhenNone &&
             (currentMode == settings.modeWhenConnected || currentMode in lastOrEmpty)
         val changeToConnected = desiredMode == settings.modeWhenConnected &&
             (currentMode == settings.modeWhenNone || currentMode in lastOrEmpty)
-        val shouldChange = forceChange || changeToNone || changeToConnected
+        val shouldChange = forceChange || forceModeChange || changeToNone || changeToConnected
 
         if (shouldChange) {
             if (!canAccessPolicy) {

@@ -37,6 +37,8 @@
     <string name="event_automation_connected">Automatización: dispositivo conectado</string>
     <string name="event_automation_no_devices">Automatización: sin dispositivos</string>
     <string name="event_automation_bluetooth_off">Automatización: Bluetooth apagado</string>
+    <string name="event_external_mode_changed">Modo de sonido cambiado externamente: \"%1$s\"</string>
+    <string name="event_external_mode_changed_short">Cambio externo de modo</string>
     <string name="no_events">Todavía no hay eventos</string>
     <string name="no_events_body">Los cambios de conexión Bluetooth aparecerán aquí.</string>
     <string name="delete">Eliminar</string>
@@ -137,6 +139,7 @@
     <string name="notification_automation_outside_schedule">Fuera del horario de automatización</string>
     <string name="notification_automation_wrong_profile">El perfil de sonido actual no es el esperado</string>
     <string name="notification_automation_no_permissions">Permisos insuficientes para cambiar el modo de sonido</string>
+    <string name="notification_automation_external_change">El modo de sonido ha sido cambiado por el usuario u otra app</string>
     <string name="action_disable_automation">Desactivar automatización</string>
     <string name="action_enable_bluetooth">Activar Bluetooth</string>
     <string name="notification_background_text">Monitorizando Bluetooth en segundo plano</string>

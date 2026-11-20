@@ -84,6 +84,11 @@ fun EventRow(
                 context.getString(R.string.event_automation_applied_bluetooth_off, it)
             } ?: eventLabel
 
+        BluetoothEventType.EXTERNAL_MODE_CHANGED ->
+            modeName?.let {
+                context.getString(R.string.event_external_mode_changed, it)
+            } ?: eventLabel
+
         BluetoothEventType.BLUETOOTH_ON,
         BluetoothEventType.BLUETOOTH_OFF,
         -> eventLabel
@@ -131,6 +136,7 @@ fun EventRow(
                         BluetoothEventType.AUTOMATION_APPLIED_CONNECTED,
                         BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES,
                         BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF,
+                        BluetoothEventType.EXTERNAL_MODE_CHANGED,
                         -> painterResource(automationModeIconRes(event.mode))
                     }
                     Icon(
@@ -178,6 +184,9 @@ private fun eventContainerColor(type: BluetoothEventType): Color {
         BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES,
         BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF,
         -> MaterialTheme.colorScheme.tertiaryContainer
+
+        BluetoothEventType.EXTERNAL_MODE_CHANGED ->
+            MaterialTheme.colorScheme.secondaryContainer
     }
 }
 
@@ -199,5 +208,8 @@ private fun eventContentColor(type: BluetoothEventType): Color {
         BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES,
         BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF,
         -> MaterialTheme.colorScheme.onTertiaryContainer
+
+        BluetoothEventType.EXTERNAL_MODE_CHANGED ->
+            MaterialTheme.colorScheme.onSecondaryContainer
     }
 }

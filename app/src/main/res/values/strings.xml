@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BT Sound Manager</string>
+
+    <!-- Navigation -->
+    <string name="nav_events">Events</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Common -->
+    <string name="loading">Loading…</string>
+    <string name="refresh">Refresh</string>
+    <string name="accept">Accept</string>
+    <string name="cancel">Cancel</string>
+    <string name="allow">Allow</string>
+    <string name="not_now">Not now</string>
+    <string name="error_generic">Something went wrong</string>
+
+    <!-- Bluetooth -->
+    <string name="bluetooth_on">Bluetooth ON</string>
+    <string name="bluetooth_off">Bluetooth OFF</string>
+    <string name="enable_bluetooth">Enable Bluetooth</string>
+    <string name="disable_bluetooth">Disable Bluetooth</string>
+    <string name="no_connected_devices">No connected devices</string>
+    <string name="connected">Connected</string>
+    <string name="paired">Paired</string>
+
+    <!-- Home -->
+    <string name="no_devices_selected">No devices selected</string>
+    <string name="automation_title">Automatic sound mode</string>
+    <string name="background_service_stopped">Stopped</string>
+
+    <!-- Events -->
+    <string name="events_title">Bluetooth events</string>
+    <string name="event_bluetooth_on">Bluetooth ON</string>
+    <string name="event_bluetooth_off">Bluetooth OFF</string>
+    <string name="event_device_connected">Device connected</string>
+    <string name="event_device_disconnected">Device disconnected</string>
+    <string name="event_automation_applied_connected">Mode \"%1$s\" is activated because \"%2$s\" is connected</string>
+    <string name="event_automation_applied_no_devices">Mode \"%1$s\" is activated because no devices are connected</string>
+    <string name="event_automation_applied_bluetooth_off">Mode \"%1$s\" is activated because Bluetooth is disabled</string>
+    <string name="event_automation_attempting_connected">Setting mode \"%1$s\" because \"%2$s\" is connected</string>
+    <string name="event_automation_attempting_no_devices">Setting mode \"%1$s\" because no devices are connected</string>
+    <string name="event_automation_attempting_bluetooth_off">Setting mode \"%1$s\" because Bluetooth is disabled</string>
+    <string name="event_automation_failed_connected">Could not set mode \"%1$s\" because \"%2$s\" is connected</string>
+    <string name="event_automation_failed_no_devices">Could not set mode \"%1$s\" because no devices are connected</string>
+    <string name="event_automation_failed_bluetooth_off">Could not set mode \"%1$s\" because Bluetooth is disabled</string>
+    <string name="event_automation_failed_permissions">Could not set mode \"%1$s\": insufficient permissions</string>
+    <string name="event_automation_connected">Automation: device connected</string>
+    <string name="event_automation_no_devices">Automation: no devices</string>
+    <string name="event_automation_bluetooth_off">Automation: Bluetooth off</string>
+    <string name="event_automation_attempting_connected_short">Automation: setting mode (device connected)</string>
+    <string name="event_automation_attempting_no_devices_short">Automation: setting mode (no devices)</string>
+    <string name="event_automation_attempting_bluetooth_off_short">Automation: setting mode (Bluetooth off)</string>
+    <string name="event_automation_failed_connected_short">Automation: failed (device connected)</string>
+    <string name="event_automation_failed_no_devices_short">Automation: failed (no devices)</string>
+    <string name="event_automation_failed_bluetooth_off_short">Automation: failed (Bluetooth off)</string>
+    <string name="event_automation_failed_permissions_short">Automation: failed (permissions)</string>
+    <string name="event_external_mode_changed">Sound mode changed externally: \"%1$s\"</string>
+    <string name="event_external_mode_changed_short">External mode change</string>
+    <string name="no_events">No events yet</string>
+    <string name="no_events_body">Bluetooth connection changes will appear here.</string>
+    <string name="delete">Delete</string>
+    <string name="delete_all_events">Delete all events</string>
+    <string name="delete_visible_events">Delete visible events</string>
+    <string name="delete_day_events">Delete this day</string>
+    <string name="delete_confirm_body">This action cannot be undone. Continue?</string>
+    <string name="delete_confirm_day_body">Events from %1$s will be deleted. This action cannot be undone.</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="filter_title">Show events</string>
+    <string name="filter_types">Event types</string>
+    <string name="filter_bluetooth_state">Bluetooth state</string>
+    <string name="filter_audio_mode_changes">Audio mode changes</string>
+    <string name="filter_devices">Events by device</string>
+    <string name="filter_all">All</string>
+    <string name="filter_none">None</string>
+    <string name="event_deleted">Events deleted</string>
+    <string name="event_delete_error">Could not delete events</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="permissions_section">Permissions</string>
+    <string name="bluetooth_permissions">Bluetooth permissions</string>
+    <string name="app_info">App info</string>
+    <string name="app_info_summary">Open the system settings for this app.</string>
+    <string name="notification_settings">Notification settings</string>
+    <string name="automation_section">Automatic sound mode</string>
+    <string name="enable_automation">Enable automation</string>
+    <string name="automation_enabled_summary">The sound mode is managed automatically within the schedule.</string>
+    <string name="automation_disabled_summary">The app will not change the sound mode.</string>
+    <string name="background_section">Run in background</string>
+    <string name="events_settings_section">Event history</string>
+    <string name="retention_days_title">Keep events for</string>
+    <string name="retention_days_summary">Events older than this are deleted automatically.</string>
+    <string name="background_optional_summary">Optional, it\'s only recommended if the app is not working properly or if automation is activated, you change active user, and you want the corresponding audio mode to be evaluated when you return to this user.</string>
+    <string name="detect_bluetooth_events">Active detection</string>
+    <string name="detect_bluetooth_events_summary">Runs a background service to detect connection changes reliably.</string>
+    <string name="reactivate_on_user_change">Reactivate when switching user</string>
+    <string name="reactivate_on_user_change_summary">Try to apply the automation and enable Bluetooth when the user returns.</string>
+    <string name="appearance_section">Appearance</string>
+    <string name="theme_mode">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="dynamic_color">Dynamic color</string>
+    <string name="dynamic_color_summary">Use the system Material You palette on Android 12 and later.</string>
+    <string name="about_section">Version %1$s</string>
+    <string name="github_title">GitHub</string>
+    <string name="battery_optimization">Battery optimization</string>
+    <string name="exact_alarm_title">Exact alarms</string>
+    <string name="notification_policy_title">Do Not Disturb access</string>
+    <string name="notification_permission_required">Notifications are disabled for this app</string>
+    <string name="bluetooth_permission_required">Bluetooth permissions are required</string>
+
+    <!-- Automation -->
+    <string name="automation_screen_title">Automation</string>
+    <string name="automation_schedule">Schedule</string>
+    <string name="start_time">Start time</string>
+    <string name="end_time">End time</string>
+    <string name="all_day">All day</string>
+    <string name="next_day_suffix">%1$s (next day)</string>
+    <string name="automation_devices">Devices</string>
+    <string name="all_bluetooth_devices">All Bluetooth devices</string>
+    <string name="selected_devices">Selected devices</string>
+    <string name="automation_modes">Sound modes</string>
+    <string name="mode_when_connected">When devices are connected</string>
+    <string name="mode_when_none">When no device is connected</string>
+    <string name="force_mode_connected">Force mode with connected devices</string>
+    <string name="force_mode_connected_summary">Apply the connected-devices mode even if the current mode wasn\'t set by this app.</string>
+    <string name="force_mode_disconnected">Force mode with no connected devices</string>
+    <string name="force_mode_disconnected_summary">Apply the no-devices mode even if the current mode wasn\'t set by this app.</string>
+    <string name="restore_media_volume">Restore media volume</string>
+    <string name="restore_media_volume_summary">Save the media volume before changing the mode and restore it afterward.</string>
+    <string name="mode_selection_title">Choose a sound mode</string>
+    <string name="mode_normal">Normal</string>
+    <string name="mode_dnd">Do Not Disturb</string>
+    <string name="mode_alarms">Alarms only</string>
+    <string name="mode_silent">Silent</string>
+    <string name="mode_conflict">The two modes must be different</string>
+    <string name="automation_policy_required">Do Not Disturb access is required</string>
+    <string name="automation_policy_required_body">To change the sound mode, allow this app to access Do Not Disturb settings.</string>
+    <string name="time_picker_title">Select time</string>
+
+    <!-- Devices -->
+    <string name="search_devices">Search devices</string>
+    <string name="no_devices_found">No devices found</string>
+    <string name="no_paired_devices">There are no paired or connected Bluetooth devices.</string>
+    <string name="device_not_available">Not available</string>
+
+    <!-- Notifications -->
+    <string name="channel_connected">Device connected notifications</string>
+    <string name="channel_disconnected">Device disconnected notifications</string>
+    <string name="channel_automation">Automation notifications</string>
+    <string name="channel_background">Background service</string>
+    <string name="notification_connected_body">Device connected</string>
+    <string name="notification_disconnected_body">Device disconnected</string>
+    <string name="notification_bluetooth_on_title">Bluetooth ON</string>
+    <string name="notification_bluetooth_on_body">Bluetooth is enabled.</string>
+    <string name="notification_bluetooth_off_title">Bluetooth OFF</string>
+    <string name="notification_bluetooth_off_body">Bluetooth is disabled. Enable it to connect your devices.</string>
+    <string name="notification_automation_title">%1$s</string>
+    <string name="notification_automation_attempting_title">Setting \"%1$s\" mode</string>
+    <string name="notification_automation_apply_failed">The sound mode could not be applied</string>
+    <string name="notification_automation_no_devices">No monitored devices are connected</string>
+    <string name="notification_automation_bluetooth_off">Bluetooth is disabled</string>
+    <string name="notification_automation_one_device">\"%1$s\" is connected</string>
+    <string name="notification_automation_outside_schedule">Outside the automation schedule</string>
+    <string name="notification_automation_not_applied_connected">\"%1$s\" is connected, but the current mode does not allow it to be applied</string>
+    <string name="notification_automation_not_applied_connected_generic">Devices are connected, but the current mode does not allow it to be applied</string>
+    <string name="notification_automation_not_applied_disconnected">\"%1$s\" is disconnected, but the current mode does not allow it to be applied</string>
+    <string name="notification_automation_not_applied_no_devices">No devices are connected, but the current mode does not allow it to be applied</string>
+    <string name="notification_automation_not_applied_bluetooth_off">Bluetooth is disabled, but the current mode does not allow it to be applied</string>
+    <string name="notification_automation_no_permissions">Insufficient permissions to change the sound mode</string>
+    <string name="notification_automation_external_change">The sound mode was changed by the user or another app</string>
+    <string name="action_disable_automation">Disable automation</string>
+    <string name="action_enable_bluetooth">Enable Bluetooth</string>
+    <string name="notification_background_text">Monitoring Bluetooth in the background</string>
+    <string name="notification_background_text_all_day">Monitoring Bluetooth in the background · Automation: all day</string>
+    <string name="notification_background_text_inside_schedule">Monitoring Bluetooth in the background · Automation: within schedule</string>
+    <string name="notification_background_text_outside_schedule">Monitoring Bluetooth in the background · Automation: outside schedule</string>
+
+    <string name="status_granted">Granted</string>
+    <string name="status_not_granted">Not granted</string>
+    <string name="status_allowed">Allowed</string>
+    <string name="status_not_allowed">Not allowed</string>
+    <string name="battery_optimizations_enabled">Enabled</string>
+    <string name="battery_optimizations_disabled">Disabled</string>
+    <string name="settings_background_running">Background monitoring is running</string>
+    <string name="settings_notifications_enabled">Notifications are enabled</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_data">Back up data</string>
+    <string name="restore_data">Restore data</string>
+    <string name="backup_saved">Backup saved</string>
+    <string name="backup_error">Could not create the backup</string>
+    <string name="restore_invalid">The selected file is not a valid backup</string>
+    <string name="restore_error">Could not restore the backup</string>
+    <string name="restore_title">Restore backup</string>
+    <string name="restore_body">Backup from %1$s, app version %2$s.</string>
+    <string name="restore_warning">Selected data replaces the current data. This cannot be undone.</string>
+    <string name="restore_events">Events</string>
+    <string name="restore_settings">Settings</string>
+    <string name="restore_settings_summary">Replace the current settings.</string>
+    <string name="restore_action">Restore</string>
+    <string name="restore_completed_settings">Settings restored</string>
+
+    <plurals name="restore_completed_all">
+        <item quantity="one">Restored %1$d event and settings</item>
+        <item quantity="other">Restored %1$d events and settings</item>
+    </plurals>
+
+    <plurals name="restore_completed_events">
+        <item quantity="one">Restored %1$d event</item>
+        <item quantity="other">Restored %1$d events</item>
+    </plurals>
+
+    <!-- Content descriptions -->
+    <string name="cd_back">Back</string>
+    <string name="cd_filter">Filter events</string>
+    <string name="cd_delete">Delete events</string>
+    <string name="cd_bluetooth_on">Bluetooth is on</string>
+    <string name="cd_bluetooth_off">Bluetooth is off</string>
+    <string name="cd_event_icon">Event icon</string>
+    <string name="cd_search">Search</string>
+    <string name="cd_more_options">More options</string>
+
+    <plurals name="selected_devices_count">
+        <item quantity="one">%1$d device selected</item>
+        <item quantity="other">%1$d devices selected</item>
+    </plurals>
+
+    <plurals name="events_count">
+        <item quantity="one">%1$d event</item>
+        <item quantity="other">%1$d events</item>
+    </plurals>
+
+    <plurals name="retention_days_value">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+
+    <plurals name="automation_more_devices">
+        <item quantity="one">\"%1$s\" and one more monitored device are connected</item>
+        <item quantity="other">\"%1$s\" and %2$d more monitored devices are connected</item>
+    </plurals>
+
+</resources>

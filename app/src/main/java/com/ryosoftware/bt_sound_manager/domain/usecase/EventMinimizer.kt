@@ -3,12 +3,22 @@ package com.ryosoftware.bt_sound_manager.domain.usecase
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEvent
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEventType
 
+data class MinimizedEvents(
+    val events: List<BluetoothEvent>,
+    /** For each visible event id, the ids of the events hidden behind it. */
+    val hiddenIds: Map<Long, Set<Long>>,
+)
+
 object EventMinimizer {
 
     private const val MIN_GAP_MILLIS = 1_000L
 
-    fun minimize(events: List<BluetoothEvent>): List<BluetoothEvent> {
+    fun minimize(events: List<BluetoothEvent>): List<BluetoothEvent> =
+        minimizeTrackingHidden(events).events
+
+    fun minimizeTrackingHidden(events: List<BluetoothEvent>): MinimizedEvents {
         val result = events.toMutableList()
+        val hiddenIds = mutableMapOf<Long, Set<Long>>()
         var index = 2
         while (index < result.size) {
             val first = result[index - 2]
@@ -19,6 +29,13 @@ object EventMinimizer {
                 areOpposite(last, middle) &&
                 last.timeUtc - MIN_GAP_MILLIS < first.timeUtc
             ) {
+                // The surviving event takes over the removed ones, including any
+                // that they were already hiding.
+                hiddenIds[first.id] = listOf(middle, last).fold(
+                    hiddenIds[first.id].orEmpty(),
+                ) { ids, removed ->
+                    ids + removed.id + hiddenIds.remove(removed.id).orEmpty()
+                }
                 result.removeAt(index)
                 result.removeAt(index - 1)
                 index = maxOf(2, index - 1)
@@ -26,7 +43,7 @@ object EventMinimizer {
             }
             index++
         }
-        return result
+        return MinimizedEvents(events = result, hiddenIds = hiddenIds)
     }
 
     private fun areSameType(first: BluetoothEvent, second: BluetoothEvent): Boolean {

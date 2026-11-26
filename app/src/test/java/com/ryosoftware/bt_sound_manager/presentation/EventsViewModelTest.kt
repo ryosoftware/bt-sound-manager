@@ -11,6 +11,7 @@ import com.ryosoftware.bt_sound_manager.domain.repository.DeviceRepository
 import com.ryosoftware.bt_sound_manager.presentation.events.EventsEvent
 import com.ryosoftware.bt_sound_manager.presentation.events.EventsViewModel
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -186,6 +187,46 @@ class EventsViewModelTest {
             viewModel.deleteVisible()
             assertEquals(EventsEvent.Deleted, viewModel.events.first())
             assertEquals(listOf(2L), events.state.value.map { it.id })
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun deleteVisibleAlsoRemovesHiddenEvents() = runTest {
+        val events = FakeEventRepository()
+        events.state.value = listOf(
+            event(1, "2026-01-15T10:00:00.000Z", BluetoothEventType.BLUETOOTH_ON),
+            event(2, "2026-01-15T10:00:00.100Z", BluetoothEventType.BLUETOOTH_OFF),
+            event(3, "2026-01-15T10:00:00.200Z", BluetoothEventType.BLUETOOTH_ON),
+        )
+        val viewModel = EventsViewModel(events, FakeDeviceRepository(), clock)
+
+        viewModel.uiState.test {
+            assertEquals(1, awaitLoaded().visibleCount)
+            viewModel.deleteVisible()
+            assertEquals(EventsEvent.Deleted, viewModel.events.first())
+            assertEquals(emptyList<Long>(), events.state.value.map { it.id })
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun deleteDayRemovesFilteredEventsOfThatDayOnly() = runTest {
+        val events = FakeEventRepository()
+        events.state.value = listOf(
+            event(1, "2026-01-14T10:00:00Z", BluetoothEventType.BLUETOOTH_ON),
+            event(2, "2026-01-15T10:00:00Z", BluetoothEventType.DEVICE_CONNECTED, "AA:BB"),
+            event(3, "2026-01-15T10:01:00Z", BluetoothEventType.BLUETOOTH_ON),
+        )
+        val viewModel = EventsViewModel(events, FakeDeviceRepository(), clock)
+
+        viewModel.uiState.test {
+            awaitLoaded()
+            viewModel.toggleBluetoothState()
+            awaitItemUntil { it.visibleCount == 1 }
+            viewModel.deleteDay(LocalDate.parse("2026-01-15"))
+            assertEquals(EventsEvent.Deleted, viewModel.events.first())
+            assertEquals(listOf(1L), events.state.value.map { it.id })
             cancelAndIgnoreRemainingEvents()
         }
     }

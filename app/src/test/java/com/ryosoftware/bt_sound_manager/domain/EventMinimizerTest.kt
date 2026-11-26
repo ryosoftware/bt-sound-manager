@@ -60,4 +60,20 @@ class EventMinimizerTest {
         )
         assertEquals(3, EventMinimizer.minimize(events).size)
     }
+
+    @Test
+    fun tracksEveryEventHiddenBehindTheVisibleOne() {
+        val events = listOf(
+            event(1, 1_000, BluetoothEventType.DEVICE_CONNECTED, "AA:BB"),
+            event(2, 1_100, BluetoothEventType.DEVICE_DISCONNECTED, "AA:BB"),
+            event(3, 1_200, BluetoothEventType.DEVICE_CONNECTED, "AA:BB"),
+            event(4, 1_300, BluetoothEventType.DEVICE_DISCONNECTED, "AA:BB"),
+            event(5, 1_400, BluetoothEventType.DEVICE_CONNECTED, "AA:BB"),
+        )
+
+        val result = EventMinimizer.minimizeTrackingHidden(events)
+
+        assertEquals(listOf(1L), result.events.map { it.id })
+        assertEquals(mapOf(1L to setOf(2L, 3L, 4L, 5L)), result.hiddenIds)
+    }
 }

@@ -59,6 +59,9 @@ data class EventsUiState(
     val filter: EventFilter = EventFilter(),
     val availableDevices: List<DeviceFilterOption> = emptyList(),
     val deviceNames: Map<String, String> = emptyMap(),
+    val hiddenIds: Map<Long, Set<Long>> = emptyMap(),
+    /** Every stored event id of each day, whether it is shown or not. */
+    val dayIds: Map<LocalDate, Set<Long>> = emptyMap(),
 )
 
 sealed interface EventsEvent {
@@ -82,7 +85,17 @@ class EventsViewModel @Inject constructor(
         deviceRepository.observeDeviceNames(),
         filter,
     ) { rawEvents, names, currentFilter ->
-        val minimized = EventMinimizer.minimize(rawEvents)
+        val minimization = EventMinimizer.minimizeTrackingHidden(rawEvents)
+        val minimized = minimization.events
+        val hiddenIds = minimization.hiddenIds
+        val dayIds = EventGrouping.group(rawEvents, clock.zoneId()).associate { day ->
+            day.date to day.events.map { it.id }.toSet()
+        }.toMutableMap()
+        // Events hidden behind one of the previous day go away with that day too.
+        EventGrouping.group(minimized, clock.zoneId()).forEach { day ->
+            dayIds[day.date] = dayIds[day.date].orEmpty() +
+                day.events.flatMap { hiddenIds[it.id].orEmpty() }
+        }
         val visible = minimized.filter(currentFilter::isVisible)
         val devices = minimized
             .mapNotNull { event ->
@@ -103,6 +116,8 @@ class EventsViewModel @Inject constructor(
             filter = currentFilter,
             availableDevices = devices,
             deviceNames = names,
+            hiddenIds = hiddenIds,
+            dayIds = dayIds,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -148,7 +163,9 @@ class EventsViewModel @Inject constructor(
     }
 
     fun deleteVisible() {
-        val ids = uiState.value.visibleIds
+        val state = uiState.value
+        val ids = state.visibleIds +
+            state.visibleIds.flatMap { state.hiddenIds[it].orEmpty() }
         if (ids.isEmpty()) return
         viewModelScope.launch {
             try {
@@ -172,12 +189,7 @@ class EventsViewModel @Inject constructor(
     }
 
     fun deleteDay(date: LocalDate) {
-        val ids = uiState.value.groups
-            .firstOrNull { it.date == date }
-            ?.events
-            ?.mapNotNull { event -> event.id.takeIf { it > 0 } }
-            ?.toSet()
-            ?: emptySet()
+        val ids = uiState.value.dayIds[date].orEmpty()
         if (ids.isEmpty()) return
         viewModelScope.launch {
             try {

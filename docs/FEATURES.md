@@ -63,7 +63,7 @@ Funciones:
 
 - agrupación por día, con Hoy/Ayer/fecha;
 - filtros por categoría de evento (estado del Bluetooth y cambios de modo de audio) y por dispositivo, con una entrada por dispositivo que engloba todos sus eventos;
-- borrado de eventos visibles, de un día o de todo el historial;
+- borrado de eventos visibles, de un día o de todo el historial; al borrar los visibles se borran también los pares ocultos asociados, y borrar un día incluye sus eventos filtrados u ocultos;
 - nombre resuelto por nombre actual guardado, nombre del evento o dirección;
 - eventos de automatización con el texto «Se activa el modo “X” porque “Y” está conectado», «Se intenta establecer el modo “X”…» o «No se ha podido establecer el modo “X”…»;
 - icono del modo en los eventos de automatización, con estilo atenuado para los intentos y de error para los fallos;

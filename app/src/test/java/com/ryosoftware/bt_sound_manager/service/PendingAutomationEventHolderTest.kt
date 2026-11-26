@@ -32,6 +32,7 @@ class PendingAutomationEventHolderTest {
                 desiredMode = InterruptMode.DO_NOT_DISTURB,
                 attemptEventId = 42L,
                 notification = notification(),
+                requestedAtElapsedTics = 1_000L,
             ),
             holder.takeConfirmed(InterruptMode.DO_NOT_DISTURB),
         )
@@ -57,6 +58,7 @@ class PendingAutomationEventHolderTest {
                 desiredMode = InterruptMode.DO_NOT_DISTURB,
                 attemptEventId = 42L,
                 notification = notification(),
+                requestedAtElapsedTics = 1_000L,
             ),
             holder.takeExpired(),
         )
@@ -86,6 +88,7 @@ class PendingAutomationEventHolderTest {
                 desiredMode = InterruptMode.SILENT_ALL,
                 attemptEventId = 2L,
                 notification = notification(),
+                requestedAtElapsedTics = 1_000L,
             ),
             holder.takeConfirmed(InterruptMode.SILENT_ALL),
         )

@@ -286,16 +286,6 @@ class AutomationCoordinator @Inject constructor(
         pendingAutomationEvents.clear()
         applyScheduler.cancelAttemptTimeout()
 
-        if (settings.automation.restoreMediaVolume) {
-            val previousVolume = runtime.previousMediaVolume
-            if (previousVolume != null &&
-                runtime.lastExecutionElapsedTics + RESTORE_VOLUME_WINDOW_MILLIS >
-                clock.elapsedRealtime()
-            ) {
-                volumeRepository.setMediaVolume(previousVolume)
-            }
-        }
-
         if (!settings.automation.enabled || !settings.automation.hasDeviceConfiguration) return
 
         eventRepository.addEvent(
@@ -383,6 +373,19 @@ class AutomationCoordinator @Inject constructor(
             showEnableBluetoothAction = confirmed.notification.showEnableBluetoothAction,
         )
         applyScheduler.cancelAttemptTimeout()
+        restoreMediaVolumeIfNeeded(confirmed)
+    }
+
+    /**
+     * Puts back the media volume saved before the mode change. A confirmation that
+     * arrives late is ignored, so a volume chosen since then is not overwritten.
+     */
+    private suspend fun restoreMediaVolumeIfNeeded(confirmed: ConfirmedAutomation) {
+        if (!settingsRepository.snapshot().automation.restoreMediaVolume) return
+        val age = clock.elapsedRealtime() - confirmed.requestedAtElapsedTics
+        if (age > RESTORE_VOLUME_WINDOW_MILLIS) return
+        val previousVolume = runtimeStateRepository.snapshot().previousMediaVolume ?: return
+        volumeRepository.setMediaVolume(previousVolume)
     }
 
     private suspend fun commitFailureFromConfirmed(confirmed: ConfirmedAutomation) {
@@ -527,6 +530,6 @@ class AutomationCoordinator @Inject constructor(
 
     companion object {
         internal const val DELAY_BEFORE_APPLY_MILLIS = 3_000L
-        private const val RESTORE_VOLUME_WINDOW_MILLIS = 5_000L
+        private const val RESTORE_VOLUME_WINDOW_MILLIS = 15_000L
     }
 }

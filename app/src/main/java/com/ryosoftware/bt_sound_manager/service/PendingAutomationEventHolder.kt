@@ -18,6 +18,7 @@ data class ConfirmedAutomation(
     val desiredMode: InterruptMode,
     val attemptEventId: Long,
     val notification: AutomationNotificationPayload,
+    val requestedAtElapsedTics: Long,
 )
 
 @Singleton
@@ -74,6 +75,7 @@ class PendingAutomationEventHolder @Inject constructor(
             desiredMode = desiredMode,
             attemptEventId = attemptEventId,
             notification = notification,
+            requestedAtElapsedTics = requestedAtElapsedTics,
         )
 
     private data class PendingAutomationEvent(

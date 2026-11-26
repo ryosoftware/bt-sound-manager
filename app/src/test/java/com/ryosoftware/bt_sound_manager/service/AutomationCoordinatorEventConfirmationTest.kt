@@ -633,6 +633,44 @@ class AutomationCoordinatorEventConfirmationTest {
         }
     }
 
+    @Test
+    fun restoresMediaVolumeWhenOwnChangeIsConfirmed() = runBlocking {
+        givenAttemptWithVolumeRestore()
+
+        coordinator.apply()
+        verify(exactly = 0) { volumeRepository.setMediaVolume(any()) }
+        nowMillis = 2_000
+        coordinator.onInterruptModeChanged()
+
+        verify(exactly = 1) { volumeRepository.setMediaVolume(7) }
+    }
+
+    @Test
+    fun keepsMediaVolumeWhenConfirmationArrivesTooLate() = runBlocking {
+        givenAttemptWithVolumeRestore()
+
+        coordinator.apply()
+        nowMillis = 60_000
+        coordinator.onAttemptTimeout()
+
+        verify(exactly = 0) { volumeRepository.setMediaVolume(any()) }
+    }
+
+    private fun givenAttemptWithVolumeRestore() {
+        val base = settings()
+        coEvery { settingsRepository.snapshot() } returns base.copy(
+            automation = base.automation.copy(restoreMediaVolume = true),
+        )
+        coEvery { runtimeStateRepository.snapshot() } returns
+            AutomationRuntimeState(previousMediaVolume = 7)
+        every { volumeRepository.currentMediaVolume() } returns 7
+        every { interruptModeRepository.currentMode() } returnsMany listOf(
+            InterruptMode.NORMAL,
+            InterruptMode.DO_NOT_DISTURB,
+        )
+        every { interruptModeRepository.setMode(InterruptMode.DO_NOT_DISTURB) } returns true
+    }
+
     private fun settings(
         forceConnected: Boolean = true,
         forceDisconnected: Boolean = false,

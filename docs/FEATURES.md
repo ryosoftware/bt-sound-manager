@@ -109,7 +109,7 @@ Reglas:
 - al activar o desactivar un forzado se reevalúa la automatización y, si el modo queda bloqueado, se conserva la notificación anterior;
 - si el cambio queda bloqueado, la notificación de automatización lo explica, con el nombre del dispositivo cuando el evento lo permite, y se registra un evento de fallo salvo que el mismo fallo sea consecutivo;
 - los bloqueos por permisos también registran un evento de fallo;
-- se guarda el volumen multimedia antes de cambiar el modo y se restaura si la opción está activa;
+- se guarda el volumen multimedia antes de cambiar el modo y, si la opción está activa, se restaura al confirmarse el cambio (hasta 15 segundos después del intento);
 - se reevalúa en arranque (con 15 segundos de retraso), actualización de la app, cambio de usuario, alarmas de inicio y fin del horario y eventos de conexión/desconexión; abrir la app no reevalúa la automatización, solo sincroniza el servicio en segundo plano;
 - al reevaluar nunca se activa Bluetooth: si está apagado se aplica el modo configurado para “sin dispositivos conectados”;
 - requiere el permiso de Bluetooth y el acceso a No molestar: si falta alguno, la automatización no se aplica, los controles aparecen deshabilitados y se conservan los valores guardados.

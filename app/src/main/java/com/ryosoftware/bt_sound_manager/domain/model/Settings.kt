@@ -68,4 +68,11 @@ data class AutomationRuntimeState(
     val lastAppliedMode: InterruptMode? = null,
     val lastExecutionElapsedTics: Long = 0L,
     val previousMediaVolume: Int? = null,
+    /**
+     * Whether [lastAppliedMode] is still the mode that the app itself set. Without it
+     * the app does not revert the connected mode unless that direction is forced.
+     */
+    val ownsMode: Boolean = false,
+    /** Mode requested by the app whose confirmation is still missing. */
+    val pendingMode: InterruptMode? = null,
 )

@@ -339,11 +339,12 @@ class AutomationCoordinatorEventConfirmationTest {
 
         coVerify(exactly = 0) { eventRepository.addEvent(any()) }
         coVerify {
-            runtimeStateRepository.saveAppliedMode(
+            runtimeStateRepository.saveCurrentMode(
                 mode = InterruptMode.DO_NOT_DISTURB,
                 elapsedRealtimeTics = any(),
             )
         }
+        coVerify(exactly = 0) { runtimeStateRepository.saveAppliedMode(any(), any()) }
         verify(exactly = 1) {
             notificationRepository.showAutomationNotification(
                 mode = InterruptMode.DO_NOT_DISTURB,

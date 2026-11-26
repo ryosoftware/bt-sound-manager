@@ -9,7 +9,20 @@ interface RuntimeStateRepository {
 
     suspend fun snapshot(): AutomationRuntimeState
 
+    /** The app set [mode]: it becomes the owned mode and nothing is pending. */
     suspend fun saveAppliedMode(mode: InterruptMode, elapsedRealtimeTics: Long)
+
+    /**
+     * [mode] was already active. It never grants ownership, which is only kept if
+     * [mode] is the last applied one.
+     */
+    suspend fun saveCurrentMode(mode: InterruptMode, elapsedRealtimeTics: Long)
+
+    suspend fun releaseModeOwnership()
+
+    suspend fun savePendingMode(mode: InterruptMode)
+
+    suspend fun clearPendingMode()
 
     suspend fun savePreviousMediaVolume(volume: Int)
 

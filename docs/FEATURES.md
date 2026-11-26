@@ -100,7 +100,9 @@ Reglas:
 - si el modo actual ya es el deseado, no se vuelve a aplicar;
 - al intentar el cambio se inserta un evento de intento con la causa y el modo deseado;
 - al confirmar, el intento se sustituye por el evento aplicado con el modo y el primer dispositivo monitorizado conectado cuando corresponde;
-- el modo aplicado se guarda en el estado interno solo al confirmar, no al intentar;
+- para abandonar el modo con dispositivos sin forzado, la app exige que sea suyo: solo considera suyo un modo que ella ha cambiado y confirmado; el intento pendiente se guarda para recuperarlo si el proceso termina antes de confirmar;
+- si el modo deseado ya estaba activo, la app no pasa a considerarlo suyo; para entrar en el modo con dispositivos basta con que el modo sin dispositivos sea el último visto por la app;
+- la app deja de considerar suyo el modo al detectar un cambio externo, y conserva esa información al reiniciar el dispositivo;
 - si el intento no se confirma, se comprueba el modo actual al vencer el timeout: si coincide se confirma; si no, el intento se sustituye por un evento de fallo;
 - si otro intento reemplaza al pendiente antes de confirmarse, el intento anterior permanece en el historial;
 - los cambios externos se registran y notifican al recibirlos; se reaplica de inmediato si el usuario u otra app activa el modo configurado de una dirección y el forzado de la dirección contraria está activo;

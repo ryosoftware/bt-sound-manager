@@ -42,10 +42,10 @@
     <string name="event_automation_attempting_connected">Setting mode \"%1$s\" because \"%2$s\" is connected</string>
     <string name="event_automation_attempting_no_devices">Setting mode \"%1$s\" because no devices are connected</string>
     <string name="event_automation_attempting_bluetooth_off">Setting mode \"%1$s\" because Bluetooth is disabled</string>
-    <string name="event_automation_failed_connected">Could not set mode \"%1$s\" because \"%2$s\" is connected</string>
-    <string name="event_automation_failed_no_devices">Could not set mode \"%1$s\" because no devices are connected</string>
-    <string name="event_automation_failed_bluetooth_off">Could not set mode \"%1$s\" because Bluetooth is disabled</string>
-    <string name="event_automation_failed_permissions">Could not set mode \"%1$s\": insufficient permissions</string>
+    <string name="event_automation_failed_connected">Could not set mode \"%1$s\" (\"%2$s\" is connected)</string>
+    <string name="event_automation_failed_no_devices">Could not set mode \"%1$s\" (no devices are connected)</string>
+    <string name="event_automation_failed_bluetooth_off">Could not set mode \"%1$s\" (Bluetooth is disabled)</string>
+    <string name="event_automation_failed_permissions">Could not set mode \"%1$s\" because not all required permissions are allowed</string>
     <string name="event_automation_connected">Automation: device connected</string>
     <string name="event_automation_no_devices">Automation: no devices</string>
     <string name="event_automation_bluetooth_off">Automation: Bluetooth off</string>

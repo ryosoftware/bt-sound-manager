@@ -69,26 +69,13 @@ fun eventTypeLabelRes(type: BluetoothEventType): Int = when (type) {
     BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES -> R.string.event_automation_no_devices
     BluetoothEventType.AUTOMATION_APPLIED_BLUETOOTH_OFF -> R.string.event_automation_bluetooth_off
     BluetoothEventType.EXTERNAL_MODE_CHANGED -> R.string.event_external_mode_changed_short
-    BluetoothEventType.AUTOMATION_ATTEMPTING_CONNECTED ->
-        R.string.event_automation_attempting_connected_short
-
-    BluetoothEventType.AUTOMATION_ATTEMPTING_NO_DEVICES ->
-        R.string.event_automation_attempting_no_devices_short
-
-    BluetoothEventType.AUTOMATION_ATTEMPTING_BLUETOOTH_OFF ->
-        R.string.event_automation_attempting_bluetooth_off_short
-
-    BluetoothEventType.AUTOMATION_FAILED_CONNECTED ->
-        R.string.event_automation_failed_connected_short
-
-    BluetoothEventType.AUTOMATION_FAILED_NO_DEVICES ->
-        R.string.event_automation_failed_no_devices_short
-
-    BluetoothEventType.AUTOMATION_FAILED_BLUETOOTH_OFF ->
-        R.string.event_automation_failed_bluetooth_off_short
-
-    BluetoothEventType.AUTOMATION_FAILED_PERMISSIONS ->
-        R.string.event_automation_failed_permissions_short
+    BluetoothEventType.AUTOMATION_ATTEMPTING_CONNECTED -> R.string.event_automation_attempting_connected_short
+    BluetoothEventType.AUTOMATION_ATTEMPTING_NO_DEVICES -> R.string.event_automation_attempting_no_devices_short
+    BluetoothEventType.AUTOMATION_ATTEMPTING_BLUETOOTH_OFF -> R.string.event_automation_attempting_bluetooth_off_short
+    BluetoothEventType.AUTOMATION_FAILED_CONNECTED -> R.string.event_automation_failed_connected_short
+    BluetoothEventType.AUTOMATION_FAILED_NO_DEVICES -> R.string.event_automation_failed_no_devices_short
+    BluetoothEventType.AUTOMATION_FAILED_BLUETOOTH_OFF -> R.string.event_automation_failed_bluetooth_off_short
+    BluetoothEventType.AUTOMATION_FAILED_PERMISSIONS -> R.string.event_automation_failed_permissions_short
 }
 
 @DrawableRes

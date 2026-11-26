@@ -77,6 +77,7 @@ class AutomationCoordinator @Inject constructor(
         val automation = settings.automation
         val currentMode = interruptModeRepository.currentMode()
         settlePending(currentMode)
+        releaseOwnershipIfModeChanged(currentMode)
         if (!automation.enabled && !doNotCheckEnabled) {
             statusHolder.update(null)
             scheduler.cancel()
@@ -107,7 +108,11 @@ class AutomationCoordinator @Inject constructor(
             minuteOfDay = minuteOfDay,
             connectedMonitoredDevices = monitoredConnected.size,
             currentMode = currentMode,
-            lastAppliedMode = runtime.lastAppliedMode,
+            // Ownership is only required to leave the connected mode. Entering it
+            // relies on the last mode seen, whoever set it.
+            lastAppliedMode = runtime.lastAppliedMode.takeUnless {
+                it == automation.modeWhenConnected && !runtime.ownsMode
+            },
             canAccessPolicy = canAccessPolicy,
             canAccessBluetooth = canAccessBluetooth,
             doNotCheckEnabled = doNotCheckEnabled,
@@ -213,12 +218,16 @@ class AutomationCoordinator @Inject constructor(
                     attempting = true,
                 )
                 applyScheduler.scheduleAttemptTimeout()
+                // Persisted so that ownership survives if the process dies before
+                // the change is confirmed.
+                runtimeStateRepository.savePendingMode(plan.desiredMode)
                 modeChangeTracker.markExpected(plan.desiredMode)
                 if (interruptModeRepository.setMode(plan.desiredMode)) {
                     modeChangeTracker.markApplied(plan.desiredMode)
                 } else {
                     modeChangeTracker.cancelExpected()
                     pendingAutomationEvents.clear()
+                    runtimeStateRepository.clearPendingMode()
                     AutomationEventFactory.createFailureFromConfirmed(
                         confirmedEvent = confirmedEvent,
                         nowUtcMillis = clock.nowMillis(),
@@ -231,7 +240,7 @@ class AutomationCoordinator @Inject constructor(
             }
 
             AutomationOutcome.ALREADY_CURRENT -> {
-                runtimeStateRepository.saveAppliedMode(
+                runtimeStateRepository.saveCurrentMode(
                     mode = plan.desiredMode,
                     elapsedRealtimeTics = clock.elapsedRealtime(),
                 )
@@ -285,6 +294,8 @@ class AutomationCoordinator @Inject constructor(
         if (!isExternalChange) return
         pendingAutomationEvents.clear()
         applyScheduler.cancelAttemptTimeout()
+        runtimeStateRepository.clearPendingMode()
+        runtimeStateRepository.releaseModeOwnership()
 
         if (!settings.automation.enabled || !settings.automation.hasDeviceConfiguration) return
 
@@ -354,6 +365,30 @@ class AutomationCoordinator @Inject constructor(
             pendingAutomationEvents.takeConfirmed(currentMode)?.let { confirmed ->
                 commitConfirmedAutomation(confirmed)
             }
+            recoverLostAttempt(currentMode)
+        }
+    }
+
+    /** Settles an attempt saved by a process that died before confirming it. */
+    private suspend fun recoverLostAttempt(currentMode: InterruptMode) {
+        if (pendingAutomationEvents.hasPending()) return
+        val attempted = runtimeStateRepository.snapshot().pendingMode ?: return
+        if (attempted == currentMode) {
+            runtimeStateRepository.saveAppliedMode(
+                mode = attempted,
+                elapsedRealtimeTics = clock.elapsedRealtime(),
+            )
+        } else {
+            runtimeStateRepository.clearPendingMode()
+        }
+    }
+
+    /** Covers changes made while no one was listening for them. */
+    private suspend fun releaseOwnershipIfModeChanged(currentMode: InterruptMode?) {
+        if (currentMode == null) return
+        val runtime = runtimeStateRepository.snapshot()
+        if (runtime.ownsMode && runtime.lastAppliedMode != currentMode) {
+            runtimeStateRepository.releaseModeOwnership()
         }
     }
 
@@ -393,6 +428,7 @@ class AutomationCoordinator @Inject constructor(
             confirmedEvent = confirmed.event,
             nowUtcMillis = clock.nowMillis(),
         ) ?: return
+        runtimeStateRepository.clearPendingMode()
         eventRepository.replaceEvent(confirmed.attemptEventId, failure)
         showFailureNotification(confirmed.desiredMode)
         applyScheduler.cancelAttemptTimeout()

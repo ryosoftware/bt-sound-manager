@@ -37,10 +37,10 @@
     <string name="event_automation_attempting_connected">Se intenta establecer el modo \"%1$s\" porque \"%2$s\" está conectado</string>
     <string name="event_automation_attempting_no_devices">Se intenta establecer el modo \"%1$s\" porque no hay dispositivos conectados</string>
     <string name="event_automation_attempting_bluetooth_off">Se intenta establecer el modo \"%1$s\" porque el Bluetooth está desactivado</string>
-    <string name="event_automation_failed_connected">No se ha podido establecer el modo \"%1$s\" porque \"%2$s\" está conectado</string>
-    <string name="event_automation_failed_no_devices">No se ha podido establecer el modo \"%1$s\" porque no hay dispositivos conectados</string>
-    <string name="event_automation_failed_bluetooth_off">No se ha podido establecer el modo \"%1$s\" porque el Bluetooth está desactivado</string>
-    <string name="event_automation_failed_permissions">No se ha podido establecer el modo \"%1$s\": permisos insuficientes</string>
+    <string name="event_automation_failed_connected">No se ha podido establecer el modo \"%1$s\" (\"%2$s\" está conectado)</string>
+    <string name="event_automation_failed_no_devices">No se ha podido establecer el modo \"%1$s\" (no hay dispositivos conectados)</string>
+    <string name="event_automation_failed_bluetooth_off">No se ha podido establecer el modo \"%1$s\" (el Bluetooth está desactivado)</string>
+    <string name="event_automation_failed_permissions">No se ha podido establecer el modo \"%1$s\" porque no se han otorgado los permisos necesarios</string>
     <string name="event_automation_connected">Automatización: dispositivo conectado</string>
     <string name="event_automation_no_devices">Automatización: sin dispositivos</string>
     <string name="event_automation_bluetooth_off">Automatización: Bluetooth apagado</string>

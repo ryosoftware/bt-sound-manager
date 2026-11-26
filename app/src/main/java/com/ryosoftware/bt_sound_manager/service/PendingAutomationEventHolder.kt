@@ -61,6 +61,9 @@ class PendingAutomationEventHolder @Inject constructor(
     }
 
     @Synchronized
+    fun hasPending(): Boolean = pending != null
+
+    @Synchronized
     fun clear() {
         pending = null
     }

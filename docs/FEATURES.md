@@ -163,7 +163,7 @@ Reglas:
 - búsqueda por nombre o dirección;
 - indicador de conectado, emparejado o no disponible, actualizado en vivo mediante los eventos ACL;
 - selección múltiple;
-- guardado automático para la automatización al salir con la flecha de la barra superior o con el gesto/botón atrás.
+- guardado automático para la automatización al salir con la flecha de la barra superior o con el gesto/botón atrás; si la selección aún no se ha cargado, se sale sin guardar, y refrescar la lista conserva los cambios pendientes.
 
 ## 11. Tema y accesibilidad
 

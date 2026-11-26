@@ -57,6 +57,9 @@ class DeviceSelectionViewModel @Inject constructor(
 
     private var isSaving = false
 
+    /** Until the stored selection is loaded, [selected] is empty and must not be saved. */
+    private var isSelectionLoaded = false
+
     val uiState: StateFlow<DeviceSelectionUiState> = combine(
         devices,
         selected,
@@ -119,12 +122,18 @@ class DeviceSelectionViewModel @Inject constructor(
         viewModelScope.launch {
             loading.value = true
             try {
+                // Only the first load reads the stored selection: a manual refresh
+                // must keep the changes that have not been saved yet.
+                if (!isSelectionLoaded) {
+                    selected.value = settingsRepository.snapshot()
+                        .automation
+                        .selectedDeviceAddresses
+                        .mapNotNull(::normalizeAddress)
+                        .toSet()
+                    isSelectionLoaded = true
+                }
                 val bluetoothDevices = runCatching { refreshDeviceNames() }
                     .getOrDefault(emptyList())
-                val settings = settingsRepository.snapshot()
-                selected.value = settings.automation.selectedDeviceAddresses
-                    .mapNotNull(::normalizeAddress)
-                    .toSet()
 
                 val names = deviceRepository.observeDeviceNames().first()
                 devices.value = mergeSelectableDevices(
@@ -156,6 +165,11 @@ class DeviceSelectionViewModel @Inject constructor(
         isSaving = true
         viewModelScope.launch {
             try {
+                if (!isSelectionLoaded) {
+                    // Nothing could have been edited yet: leave without writing.
+                    eventsChannel.send(DeviceSelectionEvent.Saved)
+                    return@launch
+                }
                 val normalized = selected.value.mapNotNull(::normalizeAddress).toSet()
                 settingsRepository.updateAutomation {
                     it.copy(selectedDeviceAddresses = normalized)

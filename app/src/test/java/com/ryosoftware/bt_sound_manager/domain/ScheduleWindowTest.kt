@@ -154,4 +154,52 @@ class ScheduleWindowTest {
         val expected = Instant.parse("2026-01-16T08:00:00Z").toEpochMilli()
         assertEquals(expected, ScheduleWindow.nextBoundaryMillis(now, settings(), zone))
     }
+
+    private val madrid = ZoneId.of("Europe/Madrid")
+
+    private fun millis(instant: String) = Instant.parse(instant).toEpochMilli()
+
+    @Test
+    fun nextStartKeepsWallTimeWhenClocksGoForward() {
+        assertEquals(
+            millis("2027-03-28T06:00:00Z"),
+            ScheduleWindow.nextStartMillis(millis("2027-03-28T00:00:00Z"), settings(), madrid),
+        )
+    }
+
+    @Test
+    fun nextStartKeepsWallTimeWhenClocksGoBack() {
+        assertEquals(
+            millis("2027-10-31T07:00:00Z"),
+            ScheduleWindow.nextStartMillis(millis("2027-10-31T00:00:00Z"), settings(), madrid),
+        )
+    }
+
+    @Test
+    fun skippedStartTimeResolvesToTheClockJump() {
+        assertEquals(
+            millis("2027-03-28T01:00:00Z"),
+            ScheduleWindow.nextStartMillis(
+                millis("2027-03-28T00:00:00Z"),
+                settings(start = 2 * 60 + 30),
+                madrid,
+            ),
+        )
+    }
+
+    @Test
+    fun repeatedStartTimeIsABoundaryBothTimesAndSoIsTheClockJump() {
+        val schedule = settings(start = 2 * 60 + 30)
+        // 02:30 summer time, back to 02:00, then 02:30 winter time.
+        val first = millis("2027-10-31T00:30:00Z")
+        val jump = millis("2027-10-31T01:00:00Z")
+        val second = millis("2027-10-31T01:30:00Z")
+
+        assertEquals(
+            first,
+            ScheduleWindow.nextBoundaryMillis(millis("2027-10-31T00:00:00Z"), schedule, madrid),
+        )
+        assertEquals(jump, ScheduleWindow.nextBoundaryMillis(first, schedule, madrid))
+        assertEquals(second, ScheduleWindow.nextBoundaryMillis(jump, schedule, madrid))
+    }
 }

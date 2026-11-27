@@ -127,9 +127,9 @@
     <string name="automation_actions">Actions</string>
     <string name="mode_when_connected">When devices are connected</string>
     <string name="mode_when_none">When no device is connected</string>
-    <string name="force_mode_connected">Force mode with connected devices</string>
+    <string name="force_mode_connected">Force mode</string>
     <string name="force_mode_connected_summary">Apply the connected-devices mode even if the current mode wasn\'t set by this app.</string>
-    <string name="force_mode_disconnected">Force mode with no connected devices</string>
+    <string name="force_mode_disconnected">@string/force_mode_connected</string>
     <string name="force_mode_disconnected_summary">Apply the no-devices mode even if the current mode wasn\'t set by this app.</string>
     <string name="restore_media_volume">Restore media volume</string>
     <string name="restore_media_volume_summary">Save the media volume before changing the mode and restore it afterward.</string>

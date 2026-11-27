@@ -120,9 +120,9 @@
     <string name="automation_actions">Acciones</string>
     <string name="mode_when_connected">Si hay dispositivos conectados</string>
     <string name="mode_when_none">Si no hay dispositivos conectados</string>
-    <string name="force_mode_connected">Forzar el modo con dispositivos conectados</string>
+    <string name="force_mode_connected">Forzar el modo</string>
     <string name="force_mode_connected_summary">Aplicar el modo para dispositivos conectados aunque el modo activo actual no lo haya fijado esta app.</string>
-    <string name="force_mode_disconnected">Forzar el modo sin dispositivos conectados</string>
+    <string name="force_mode_disconnected">@string/force_mode_connected</string>
     <string name="force_mode_disconnected_summary">Aplicar el modo para ausencia de dispositivos aunque el modo activo actual no lo haya fijado esta app.</string>
     <string name="restore_media_volume">Restaurar volumen multimedia</string>
     <string name="restore_media_volume_summary">Guardar el volumen multimedia antes de cambiar el modo y restaurarlo después.</string>

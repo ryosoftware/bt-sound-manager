@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="force_mode_connected">Reactivar si lo desactivo (con dispositivos)</string>
+    <string name="force_mode_connected">Reactivar si lo desactivo</string>
     <string name="force_mode_connected_summary">Volver a activar el modo para dispositivos conectados cuando lo desactives.</string>
-    <string name="force_mode_disconnected">Reactivar si lo desactivo (sin dispositivos)</string>
+    <string name="force_mode_disconnected">@string/force_mode_connected</string>
     <string name="force_mode_disconnected_summary">Volver a activar el modo para ausencia de dispositivos cuando lo desactives.</string>
 </resources>

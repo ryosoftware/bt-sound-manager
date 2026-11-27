@@ -21,8 +21,8 @@ android {
         applicationId = namespace
         minSdk = 26
         targetSdk = compileSdk
-        versionCode = 8
-        versionName = "1.8"
+        versionCode = 9
+        versionName = "1.9"
 
         testInstrumentationRunner = "$namespace.HiltTestRunner"
         vectorDrawables.useSupportLibrary = true

@@ -40,6 +40,7 @@ class AutomationViewModelTest {
         every { settingsRepository.settings } returns flowOf(AppSettings())
         every { deviceRepository.observeDeviceNames() } returns flowOf(emptyMap())
         every { interruptModeRepository.canAccessPolicy() } returns true
+        every { interruptModeRepository.usesOwnRule } returns false
         every { bluetoothRepository.hasPermissions() } returns true
         coEvery { settingsRepository.updateAutomation(any()) } returns Unit
         coEvery { settingsRepository.updateBackground(any()) } returns Unit

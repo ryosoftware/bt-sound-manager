@@ -204,33 +204,47 @@ fun AutomationScreen(
             }
 
             item {
-                SectionCard(title = stringResource(R.string.automation_modes)) {
+                SectionCard(title = stringResource(R.string.mode_when_connected)) {
                     SettingNavigationRow(
-                        title = stringResource(R.string.mode_when_connected),
+                        title = stringResource(R.string.sound_mode),
                         summary = modeLabel(context, state.automation.modeWhenConnected),
                         onClick = { modePicker = ModePickerTarget.CONNECTED },
                         enabled = state.automation.enabled && permissionsReady,
                     )
+                    if (state.showForceConnected) {
+                        SettingSwitchRow(
+                            title = stringResource(R.string.force_mode_connected),
+                            summary = stringResource(R.string.force_mode_connected_summary),
+                            checked = state.automation.forceModeOnDevicesConnected,
+                            onCheckedChange = viewModel::setForceModeOnDevicesConnected,
+                            enabled = state.automation.enabled && permissionsReady,
+                        )
+                    }
+                }
+            }
+
+            item {
+                SectionCard(title = stringResource(R.string.mode_when_none)) {
                     SettingNavigationRow(
-                        title = stringResource(R.string.mode_when_none),
+                        title = stringResource(R.string.sound_mode),
                         summary = modeLabel(context, state.automation.modeWhenNone),
                         onClick = { modePicker = ModePickerTarget.NONE },
                         enabled = state.automation.enabled && permissionsReady,
                     )
-                    SettingSwitchRow(
-                        title = stringResource(R.string.force_mode_connected),
-                        summary = stringResource(R.string.force_mode_connected_summary),
-                        checked = state.automation.forceModeOnDevicesConnected,
-                        onCheckedChange = viewModel::setForceModeOnDevicesConnected,
-                        enabled = state.automation.enabled && permissionsReady,
-                    )
-                    SettingSwitchRow(
-                        title = stringResource(R.string.force_mode_disconnected),
-                        summary = stringResource(R.string.force_mode_disconnected_summary),
-                        checked = state.automation.forceModeOnDevicesDisconnected,
-                        onCheckedChange = viewModel::setForceModeOnDevicesDisconnected,
-                        enabled = state.automation.enabled && permissionsReady,
-                    )
+                    if (state.showForceDisconnected) {
+                        SettingSwitchRow(
+                            title = stringResource(R.string.force_mode_disconnected),
+                            summary = stringResource(R.string.force_mode_disconnected_summary),
+                            checked = state.automation.forceModeOnDevicesDisconnected,
+                            onCheckedChange = viewModel::setForceModeOnDevicesDisconnected,
+                            enabled = state.automation.enabled && permissionsReady,
+                        )
+                    }
+                }
+            }
+
+            item {
+                SectionCard(title = stringResource(R.string.automation_actions)) {
                     SettingSwitchRow(
                         title = stringResource(R.string.restore_media_volume),
                         summary = stringResource(R.string.restore_media_volume_summary),

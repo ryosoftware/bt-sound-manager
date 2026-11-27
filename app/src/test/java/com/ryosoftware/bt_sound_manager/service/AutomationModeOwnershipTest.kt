@@ -74,6 +74,7 @@ class AutomationModeOwnershipTest {
     }
     private val interruptModeRepository = mockk<InterruptModeRepository> {
         every { canAccessPolicy() } returns true
+        every { usesOwnRule } returns false
         every { currentMode() } answers { mode }
         every { setMode(any()) } answers {
             mode = firstArg()

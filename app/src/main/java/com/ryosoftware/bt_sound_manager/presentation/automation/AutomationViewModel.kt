@@ -29,7 +29,15 @@ data class AutomationUiState(
     val deviceNames: Map<String, String> = emptyMap(),
     val policyAccess: Boolean = false,
     val bluetoothPermissionGranted: Boolean = false,
-)
+    val usesOwnRule: Boolean = false,
+) {
+    // With an own rule, forcing only makes sense for a mode that restricts sound.
+    val showForceConnected: Boolean
+        get() = !usesOwnRule || automation.modeWhenConnected != InterruptMode.NORMAL
+
+    val showForceDisconnected: Boolean
+        get() = !usesOwnRule || automation.modeWhenNone != InterruptMode.NORMAL
+}
 
 sealed interface AutomationEvent {
     data object PolicyRequired : AutomationEvent
@@ -65,6 +73,7 @@ class AutomationViewModel @Inject constructor(
             deviceNames = names,
             policyAccess = access,
             bluetoothPermissionGranted = bluetoothGranted,
+            usesOwnRule = interruptModeRepository.usesOwnRule,
         )
     }.stateIn(
         scope = viewModelScope,

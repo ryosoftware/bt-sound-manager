@@ -3,6 +3,8 @@ package com.ryosoftware.bt_sound_manager.service
 import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.ryosoftware.bt_sound_manager.domain.repository.OwnRuleStatus
+import com.ryosoftware.bt_sound_manager.domain.repository.OwnRuleResult
 import com.ryosoftware.bt_sound_manager.R
 import com.ryosoftware.bt_sound_manager.core.time.AppClock
 import com.ryosoftware.bt_sound_manager.domain.model.AppSettings
@@ -655,6 +657,53 @@ class AutomationCoordinatorEventConfirmationTest {
         coordinator.onAttemptTimeout()
 
         verify(exactly = 0) { volumeRepository.setMediaVolume(any()) }
+    }
+
+    @Test
+    fun ownRuleReportsOtherRestrictionInsteadOfFailure() = runBlocking {
+        givenOwnRule(OwnRuleStatus.CHANGED, effective = InterruptMode.DO_NOT_DISTURB)
+        coEvery { bluetoothRepository.connectedDevices() } returns emptyList()
+
+        coordinator.apply()
+
+        verify { interruptModeRepository.applyOwnRule(InterruptMode.NORMAL) }
+        verify(exactly = 0) { interruptModeRepository.setMode(any()) }
+        coVerify(exactly = 1) {
+            eventRepository.addEvent(
+                match { it.type == BluetoothEventType.AUTOMATION_APPLIED_NO_DEVICES },
+            )
+        }
+    }
+
+    @Test
+    fun disabledOwnRuleRecordsFailureAndOffersSettings() = runBlocking {
+        givenOwnRule(OwnRuleStatus.DISABLED, effective = InterruptMode.NORMAL)
+        coEvery { bluetoothRepository.connectedDevices() } returns emptyList()
+
+        coordinator.apply()
+
+        coVerify(exactly = 1) {
+            eventRepository.addEvent(
+                match { it.type == BluetoothEventType.AUTOMATION_FAILED_NO_DEVICES },
+            )
+        }
+        verify {
+            notificationRepository.showAutomationNotification(
+                mode = null,
+                body = any(),
+                showToggleAutomationAction = true,
+                showEnableBluetoothAction = any(),
+                ruleSettingsId = "rule",
+            )
+        }
+    }
+
+    private fun givenOwnRule(status: OwnRuleStatus, effective: InterruptMode) {
+        coEvery { settingsRepository.snapshot() } returns settings()
+        every { interruptModeRepository.usesOwnRule } returns true
+        every { interruptModeRepository.currentMode() } returns effective
+        every { interruptModeRepository.applyOwnRule(any()) } returns
+            OwnRuleResult(status, "rule")
     }
 
     private fun givenAttemptWithVolumeRestore() {

@@ -28,6 +28,7 @@ interface MonitorNotificationRepository {
         showEnableBluetoothAction: Boolean,
         showPolicySettingsAction: Boolean = false,
         attempting: Boolean = false,
+        ruleSettingsId: String? = null,
     )
 
     fun hideAutomationNotification()

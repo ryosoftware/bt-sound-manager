@@ -96,7 +96,7 @@
     <string name="background_optional_summary">Optional, it\'s only recommended if the app is not working properly or if automation is activated, you change active user, and you want the corresponding audio mode to be evaluated when you return to this user.</string>
     <string name="detect_bluetooth_events">Active detection</string>
     <string name="detect_bluetooth_events_summary">Runs a background service to detect connection changes reliably.</string>
-    <string name="reactivate_on_user_change">Reactivate when switching user</string>
+    <string name="reactivate_on_user_change">Reapply when switching user</string>
     <string name="reactivate_on_user_change_summary">Try to apply the automation and enable Bluetooth when the user returns.</string>
     <string name="appearance_section">Appearance</string>
     <string name="theme_mode">Theme</string>
@@ -123,7 +123,8 @@
     <string name="automation_devices">Devices</string>
     <string name="all_bluetooth_devices">All Bluetooth devices</string>
     <string name="selected_devices">Selected devices</string>
-    <string name="automation_modes">Sound modes</string>
+    <string name="sound_mode">Sound mode</string>
+    <string name="automation_actions">Actions</string>
     <string name="mode_when_connected">When devices are connected</string>
     <string name="mode_when_none">When no device is connected</string>
     <string name="force_mode_connected">Force mode with connected devices</string>
@@ -245,4 +246,7 @@
         <item quantity="other">\"%1$s\" and %2$d more monitored devices are connected</item>
     </plurals>
 
+    <string name="action_open_rule_settings">Open rule settings</string>
+    <string name="notification_automation_rule_disabled">The app\'s Do Not Disturb rule is disabled. Enable it in the system settings.</string>
+    <string name="notification_automation_other_restriction">The app removed its restriction; Do Not Disturb remains active for another reason.</string>
 </resources>

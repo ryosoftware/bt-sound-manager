@@ -28,6 +28,18 @@ data class AutomationSettings(
     val hasDeviceConfiguration: Boolean
         get() = monitorAllDevices || selectedDeviceAddresses.isNotEmpty()
 
+    /**
+     * With an app-owned Do Not Disturb rule, forcing the normal mode cannot do
+     * anything: the app removes its own restriction anyway and cannot remove others.
+     * The saved values are kept in case the modes change.
+     */
+    fun withoutForcedNormalMode(): AutomationSettings = copy(
+        forceModeOnDevicesConnected = forceModeOnDevicesConnected &&
+            modeWhenConnected != InterruptMode.NORMAL,
+        forceModeOnDevicesDisconnected = forceModeOnDevicesDisconnected &&
+            modeWhenNone != InterruptMode.NORMAL,
+    )
+
     companion object {
         const val DEFAULT_START_MINUTE = 6 * 60
         const val DEFAULT_END_MINUTE = 22 * 60

@@ -37,7 +37,7 @@ Comportamiento:
 - al apagarse Bluetooth se oculta la de conexión y se muestra una notificación con acción para activarlo;
 - las notificaciones de dispositivo abren el historial;
 - la notificación de automatización permite desactivarla, activar Bluetooth o abrir el acceso a No molestar;
-- al intentar un cambio se muestra una notificación de intento con el modo deseado;
+- en Android 14 o anterior, al intentar un cambio se muestra una notificación de intento con el modo deseado;
 - al confirmarse, la notificación se actualiza con el modo establecido y los dispositivos conectados;
 - si el intento no se confirma o falla, se muestra una notificación de fallo;
 - cuando el usuario u otra app cambia el modo de sonido, se registra un cambio externo y la notificación de automatización lo indica al recibirlo, aunque después se reaplique el modo;
@@ -79,7 +79,7 @@ Configuración:
 - todos los dispositivos Bluetooth o una selección;
 - modo cuando hay al menos un dispositivo configurado conectado;
 - modo cuando no hay dispositivos conectados;
-- forzar el modo al conectar dispositivos y al no haber dispositivos conectados, cada dirección por separado;
+- forzar el modo al conectar dispositivos y al no haber dispositivos conectados, cada dirección por separado (su efecto depende de la versión de Android; ver las reglas);
 - restaurar el volumen multimedia tras el cambio;
 - reactivación al cambiar de usuario, que requiere «Detección activa».
 
@@ -90,13 +90,24 @@ Modos:
 - Solo alarmas;
 - Silencio.
 
-Reglas:
+Reglas comunes:
 
 - la automatización solo se aplica si está activada y hay dispositivos configurados;
 - fuera del horario no se cambia el modo;
 - el cambio se aplica 3 segundos después de la conexión o desconexión;
 - si el servicio no está activo, el receiver delega el cambio en WorkManager con un retraso mínimo de 3 segundos;
 - se descarta el evento si el estado del dispositivo vuelve a cambiar;
+- no es posible saber qué app realizó un cambio externo;
+- al activar o desactivar un forzado se reevalúa la automatización y, si el modo queda bloqueado, se conserva la notificación anterior;
+- si el cambio queda bloqueado, la notificación de automatización lo explica, con el nombre del dispositivo cuando el evento lo permite, y se registra un evento de fallo salvo que el mismo fallo sea consecutivo;
+- los bloqueos por permisos también registran un evento de fallo;
+- se reevalúa en arranque (con 15 segundos de retraso), actualización de la app, cambio de usuario, alarmas de inicio y fin del horario y eventos de conexión/desconexión; abrir la app no reevalúa la automatización, solo sincroniza el servicio en segundo plano;
+- al reevaluar nunca se activa Bluetooth: si está apagado se aplica el modo configurado para “sin dispositivos conectados”;
+- requiere el permiso de Bluetooth y el acceso a No molestar: si falta alguno, la automatización no se aplica, los controles aparecen deshabilitados y se conservan los valores guardados;
+- los cambios externos se registran y notifican al recibirlos.
+
+Android 14 o anterior (se cambia el modo global):
+
 - si el modo actual ya es el deseado, no se vuelve a aplicar;
 - al intentar el cambio se inserta un evento de intento con la causa y el modo deseado;
 - al confirmar, el intento se sustituye por el evento aplicado con el modo y el primer dispositivo monitorizado conectado cuando corresponde;
@@ -105,16 +116,21 @@ Reglas:
 - la app deja de considerar suyo el modo al detectar un cambio externo, y conserva esa información al reiniciar el dispositivo;
 - si el intento no se confirma, se comprueba el modo actual al vencer el timeout: si coincide se confirma; si no, el intento se sustituye por un evento de fallo;
 - si otro intento reemplaza al pendiente antes de confirmarse, el intento anterior permanece en el historial;
-- los cambios externos se registran y notifican al recibirlos; se reaplica de inmediato si el usuario u otra app activa el modo configurado de una dirección y el forzado de la dirección contraria está activo;
-- no es posible saber qué app realizó un cambio externo;
+- se reaplica de inmediato si el usuario u otra app activa el modo configurado de una dirección y el forzado de la dirección contraria está activo;
 - con el forzado de la dirección activo, el modo deseado se aplica aunque el modo actual no lo haya fijado la app; con el forzado desactivado, solo se cambia si está activo el modo contrario y fue fijado por la app;
-- al activar o desactivar un forzado se reevalúa la automatización y, si el modo queda bloqueado, se conserva la notificación anterior;
-- si el cambio queda bloqueado, la notificación de automatización lo explica, con el nombre del dispositivo cuando el evento lo permite, y se registra un evento de fallo salvo que el mismo fallo sea consecutivo;
-- los bloqueos por permisos también registran un evento de fallo;
-- se guarda el volumen multimedia antes de cambiar el modo y, si la opción está activa, se restaura al confirmarse el cambio (hasta 15 segundos después del intento);
-- se reevalúa en arranque (con 15 segundos de retraso), actualización de la app, cambio de usuario, alarmas de inicio y fin del horario y eventos de conexión/desconexión; abrir la app no reevalúa la automatización, solo sincroniza el servicio en segundo plano;
-- al reevaluar nunca se activa Bluetooth: si está apagado se aplica el modo configurado para “sin dispositivos conectados”;
-- requiere el permiso de Bluetooth y el acceso a No molestar: si falta alguno, la automatización no se aplica, los controles aparecen deshabilitados y se conservan los valores guardados.
+- se guarda el volumen multimedia antes de cambiar el modo y, si la opción está activa, se restaura al confirmarse el cambio (hasta 15 segundos después del intento).
+
+Android 15 o superior (reglas propias de No molestar):
+
+- la app no cambia el modo global: activa una regla propia (una por modo restrictivo) o, para el modo normal, las desactiva todas;
+- el resultado se conoce al momento: no hay intentos pendientes, y el evento aplicado se registra cuando la regla cambia;
+- las restricciones del usuario o de otras apps se mantienen; si al pasar al modo normal queda alguna, la notificación lo indica sin marcar fallo;
+- la regla se activa aunque hubiera otro modo puesto, y Android aplica la restricción más fuerte; no se usa la propiedad del modo;
+- si la regla está desactivada en el sistema, se registra el fallo y se ofrece abrir sus ajustes;
+- el forzado significa «reactivar si lo desactivo»: solo se ofrece para un modo que restrinja el sonido y se ignora para el modo normal, conservando su valor;
+- sin forzado, si el usuario apaga la regla se respeta hasta que cambie el modo deseado o se reinicie el dispositivo; entretanto, una reevaluación puede indicar que el modo no se ha aplicado;
+- con forzado, la reactivación es inmediata si al apagarla queda activo el modo configurado del otro lado (por ejemplo, Normal); en otro caso, ocurre en la siguiente reevaluación;
+- si la opción está activa, el volumen multimedia se restaura justo después de cambiar la regla.
 
 ## 6. Servicio de segundo plano
 
@@ -127,7 +143,7 @@ Reglas:
 
 ## 7. Reactivación al cambiar de usuario
 
-- Se configura en Automatización → Modos de sonido y solo está disponible con la automatización activa y «Detección activa» encendida; no activa la detección por sí sola.
+- Se configura en Automatización → Acciones y solo está disponible con la automatización activa y «Detección activa» encendida; no activa la detección por sí sola.
 - Si se desactiva «Detección activa», la opción queda marcada pero deshabilitada, el servicio se detiene y la reactivación no se ejecuta hasta volver a activar la detección.
 - Al volver el usuario, se intenta aplicar la automatización.
 - Se intenta activar Bluetooth cuando el sistema lo permite.

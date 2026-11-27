@@ -90,7 +90,7 @@
     <string name="background_optional_summary">Opcional, sólo se recomienda si la app no está funcionando correctamente o si se activa la automatización, cambia de usuario, y desea que se evalúe el modo de audio que corresponda al volver a este usuario.</string>
     <string name="detect_bluetooth_events">Detección activa</string>
     <string name="detect_bluetooth_events_summary">Ejecuta un servicio en segundo plano para detectar cambios con fiabilidad.</string>
-    <string name="reactivate_on_user_change">Reactivar al cambiar de usuario</string>
+    <string name="reactivate_on_user_change">Reaplicar al cambiar de usuario</string>
     <string name="reactivate_on_user_change_summary">Intentar aplicar la automatización y activar Bluetooth al volver el usuario.</string>
     <string name="appearance_section">Apariencia</string>
     <string name="theme_mode">Tema</string>
@@ -116,7 +116,8 @@
     <string name="automation_devices">Dispositivos</string>
     <string name="all_bluetooth_devices">Todos los dispositivos Bluetooth</string>
     <string name="selected_devices">Dispositivos seleccionados</string>
-    <string name="automation_modes">Modos de sonido</string>
+    <string name="sound_mode">Modo de sonido</string>
+    <string name="automation_actions">Acciones</string>
     <string name="mode_when_connected">Si hay dispositivos conectados</string>
     <string name="mode_when_none">Si no hay dispositivos conectados</string>
     <string name="force_mode_connected">Forzar el modo con dispositivos conectados</string>
@@ -241,4 +242,7 @@
         <item quantity="other">\"%1$s\" y otros %2$d dispositivos monitorizados están conectados</item>
     </plurals>
 
+    <string name="action_open_rule_settings">Abrir ajustes de la regla</string>
+    <string name="notification_automation_rule_disabled">La regla de No molestar de la app está desactivada. Actívala en los ajustes del sistema.</string>
+    <string name="notification_automation_other_restriction">La app ha retirado su restricción; No molestar sigue activo por otra causa.</string>
 </resources>

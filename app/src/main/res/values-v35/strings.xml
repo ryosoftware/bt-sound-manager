@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="force_mode_connected">Reactivate if I turn it off (devices connected)</string>
+    <string name="force_mode_connected_summary">Activate the connected-devices mode again when you turn it off.</string>
+    <string name="force_mode_disconnected">Reactivate if I turn it off (no devices)</string>
+    <string name="force_mode_disconnected_summary">Activate the no-devices mode again when you turn it off.</string>
+</resources>

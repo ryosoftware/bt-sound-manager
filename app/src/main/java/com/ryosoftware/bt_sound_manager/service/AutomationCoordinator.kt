@@ -4,6 +4,7 @@ import android.content.Context
 import com.ryosoftware.bt_sound_manager.R
 import com.ryosoftware.bt_sound_manager.core.time.AppClock
 import com.ryosoftware.bt_sound_manager.core.util.normalizeAddress
+import com.ryosoftware.bt_sound_manager.domain.model.AutomationRuntimeState
 import com.ryosoftware.bt_sound_manager.domain.model.AutomationSettings
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothDeviceInfo
 import com.ryosoftware.bt_sound_manager.domain.model.BluetoothEvent
@@ -15,6 +16,7 @@ import com.ryosoftware.bt_sound_manager.domain.repository.BluetoothRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.DeviceRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.InterruptModeRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.MonitorNotificationRepository
+import com.ryosoftware.bt_sound_manager.domain.repository.OwnRuleStatus
 import com.ryosoftware.bt_sound_manager.domain.repository.RuntimeStateRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.SettingsRepository
 import com.ryosoftware.bt_sound_manager.domain.repository.VolumeRepository
@@ -49,6 +51,9 @@ class AutomationCoordinator @Inject constructor(
     private val clock: AppClock,
 ) {
     private val planner = AutomationPlanner()
+
+    @Volatile
+    private var ownRuleAppliedAtElapsedTics: Long? = null
 
     suspend fun apply(
         doNotCheckEnabled: Boolean = false,
@@ -117,6 +122,17 @@ class AutomationCoordinator @Inject constructor(
             canAccessBluetooth = canAccessBluetooth,
             doNotCheckEnabled = doNotCheckEnabled,
         )
+
+        // With an own rule, whatever else restricts the sound does not block the app.
+        // The exception is respecting that the user has turned the rule off.
+        val useOwnRule = interruptModeRepository.usesOwnRule &&
+            plan.outcome in RULE_OUTCOMES &&
+            !isTurnedOffByUser(plan.desiredMode, currentMode, runtime, automation)
+        if (useOwnRule) {
+            applyThroughOwnRule(plan.desiredMode, monitoredConnected, bluetoothEnabled)
+            scheduler.scheduleNextTransition(automation)
+            return
+        }
 
         when (plan.outcome) {
             AutomationOutcome.NOT_ENABLED,
@@ -251,6 +267,128 @@ class AutomationCoordinator @Inject constructor(
         scheduler.scheduleNextTransition(automation)
     }
 
+    private fun isTurnedOffByUser(
+        desiredMode: InterruptMode,
+        currentMode: InterruptMode?,
+        runtime: AutomationRuntimeState,
+        automation: AutomationSettings,
+    ): Boolean {
+        val forced = if (desiredMode == automation.modeWhenConnected) {
+            automation.forceModeOnDevicesConnected
+        } else {
+            automation.forceModeOnDevicesDisconnected
+        }
+        // The timestamp is cleared on boot, when rules start inactive again.
+        return !forced &&
+            runtime.lastExecutionElapsedTics > 0 &&
+            runtime.lastAppliedMode == desiredMode &&
+            currentMode != null &&
+            currentMode.ordinal < desiredMode.ordinal
+    }
+
+    /** The result is known at once: there is no attempt waiting for confirmation. */
+    private suspend fun applyThroughOwnRule(
+        desiredMode: InterruptMode,
+        monitoredConnected: List<BluetoothDeviceInfo>,
+        bluetoothEnabled: Boolean,
+    ) {
+        val previousVolume = volumeRepository.currentMediaVolume()
+        val previousAppliedAt = ownRuleAppliedAtElapsedTics
+        ownRuleAppliedAtElapsedTics = clock.elapsedRealtime()
+        val result = interruptModeRepository.applyOwnRule(desiredMode)
+        // If nothing changed, later mode changes are not a consequence of this call.
+        if (result.status == OwnRuleStatus.UNCHANGED) {
+            ownRuleAppliedAtElapsedTics = previousAppliedAt
+        }
+        val effectiveMode = if (result.status == OwnRuleStatus.CHANGED ||
+            result.status == OwnRuleStatus.UNCHANGED
+        ) {
+            awaitEffectiveMode(desiredMode)
+        } else {
+            interruptModeRepository.currentMode()
+        }
+        effectiveMode?.let(modeChangeTracker::markApplied)
+
+        if (result.status == OwnRuleStatus.DISABLED ||
+            result.status == OwnRuleStatus.FAILED
+        ) {
+            addFailureEventIfNeeded(
+                AutomationEventFactory.createFailure(
+                    nowUtcMillis = clock.nowMillis(),
+                    mode = desiredMode,
+                    bluetoothEnabled = bluetoothEnabled,
+                    monitoredConnectedDevices = monitoredConnected,
+                ),
+            )
+            if (result.status == OwnRuleStatus.DISABLED) {
+                notificationRepository.showAutomationNotification(
+                    mode = null,
+                    body = context.getString(R.string.notification_automation_rule_disabled),
+                    showToggleAutomationAction = true,
+                    showEnableBluetoothAction = !bluetoothEnabled,
+                    ruleSettingsId = result.ruleId,
+                )
+            } else {
+                showFailureNotification(desiredMode)
+            }
+            return
+        }
+
+        runtimeStateRepository.saveCurrentMode(
+            mode = effectiveMode ?: desiredMode,
+            elapsedRealtimeTics = clock.elapsedRealtime(),
+        )
+        if (result.status == OwnRuleStatus.CHANGED) {
+            eventRepository.addEvent(
+                AutomationEventFactory.create(
+                    nowUtcMillis = clock.nowMillis(),
+                    mode = desiredMode,
+                    bluetoothEnabled = bluetoothEnabled,
+                    monitoredConnectedDevices = monitoredConnected,
+                ),
+            )
+            val restoreVolume = settingsRepository.snapshot().automation.restoreMediaVolume
+            if (restoreVolume && previousVolume >= 0) {
+                volumeRepository.setMediaVolume(previousVolume)
+            }
+        }
+        if (desiredMode == InterruptMode.NORMAL &&
+            effectiveMode != null &&
+            effectiveMode != InterruptMode.NORMAL
+        ) {
+            notificationRepository.showAutomationNotification(
+                mode = effectiveMode,
+                body = context.getString(R.string.notification_automation_other_restriction),
+                showToggleAutomationAction = true,
+                showEnableBluetoothAction = !bluetoothEnabled,
+            )
+        } else {
+            showApplied(desiredMode, monitoredConnected, bluetoothEnabled)
+        }
+    }
+
+    /** The system may take a moment to reflect a rule change in the current mode. */
+    private suspend fun awaitEffectiveMode(desiredMode: InterruptMode): InterruptMode? {
+        var mode = interruptModeRepository.currentMode()
+        var checks = 0
+        while (mode != null &&
+            !mode.satisfies(desiredMode) &&
+            checks < RULE_SETTLE_CHECKS
+        ) {
+            delay(RULE_SETTLE_CHECK_MILLIS)
+            mode = interruptModeRepository.currentMode()
+            checks++
+        }
+        return mode
+    }
+
+    private fun InterruptMode.satisfies(desiredMode: InterruptMode): Boolean =
+        if (desiredMode == InterruptMode.NORMAL) {
+            this == InterruptMode.NORMAL
+        } else {
+            ordinal >= desiredMode.ordinal
+        }
+
     suspend fun applyDelayed(
         eventTimeMillis: Long,
         deviceAddress: String?,
@@ -292,6 +430,13 @@ class AutomationCoordinator @Inject constructor(
             baselineMode = runtime.lastAppliedMode,
         )
         if (!isExternalChange) return
+        // The effective mode after changing the own rule depends on other rules.
+        val ruleAppliedAt = ownRuleAppliedAtElapsedTics
+        if (ruleAppliedAt != null &&
+            clock.elapsedRealtime() - ruleAppliedAt <= OWN_RULE_WINDOW_MILLIS
+        ) {
+            return
+        }
         pendingAutomationEvents.clear()
         applyScheduler.cancelAttemptTimeout()
         runtimeStateRepository.clearPendingMode()
@@ -311,7 +456,12 @@ class AutomationCoordinator @Inject constructor(
             showToggleAutomationAction = true,
             showEnableBluetoothAction = !bluetoothRepository.isEnabled(),
         )
-        if (settings.automation.shouldReapplyAfterExternalChange(currentMode)) {
+        val automation = if (interruptModeRepository.usesOwnRule) {
+            settings.automation.withoutForcedNormalMode()
+        } else {
+            settings.automation
+        }
+        if (automation.shouldReapplyAfterExternalChange(currentMode)) {
             apply()
         }
     }
@@ -566,6 +716,14 @@ class AutomationCoordinator @Inject constructor(
 
     companion object {
         internal const val DELAY_BEFORE_APPLY_MILLIS = 3_000L
+        private const val OWN_RULE_WINDOW_MILLIS = 2_000L
+        private const val RULE_SETTLE_CHECK_MILLIS = 100L
+        private const val RULE_SETTLE_CHECKS = 10
+        private val RULE_OUTCOMES = setOf(
+            AutomationOutcome.APPLIED,
+            AutomationOutcome.ALREADY_CURRENT,
+            AutomationOutcome.WRONG_CURRENT_PROFILE,
+        )
         private const val RESTORE_VOLUME_WINDOW_MILLIS = 15_000L
     }
 }

@@ -149,6 +149,7 @@ class MonitorNotificationRepositoryImpl @Inject constructor(
         showEnableBluetoothAction: Boolean,
         showPolicySettingsAction: Boolean,
         attempting: Boolean,
+        ruleSettingsId: String?,
     ) {
         val title = if (mode == null) {
             context.getString(R.string.automation_title)
@@ -173,6 +174,23 @@ class MonitorNotificationRepositoryImpl @Inject constructor(
             .setOnlyAlertOnce(true)
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
+        if (ruleSettingsId != null &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+        ) {
+            val ruleIntent = PendingIntent.getActivity(
+                context,
+                REQUEST_RULE_SETTINGS,
+                Intent(Settings.ACTION_AUTOMATIC_ZEN_RULE_SETTINGS)
+                    .putExtra(Settings.EXTRA_AUTOMATIC_ZEN_RULE_ID, ruleSettingsId)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                pendingIntentFlags(),
+            )
+            builder.addAction(
+                0,
+                context.getString(R.string.action_open_rule_settings),
+                ruleIntent,
+            )
+        }
         if (showToggleAutomationAction) {
             val toggleIntent = PendingIntent.getBroadcast(
                 context,
@@ -351,5 +369,6 @@ class MonitorNotificationRepositoryImpl @Inject constructor(
         const val REQUEST_BLUETOOTH_OFF = 207
         const val REQUEST_POLICY_SETTINGS = 208
         const val REQUEST_BLUETOOTH_ON = 209
+        const val REQUEST_RULE_SETTINGS = 210
     }
 }
